@@ -49,6 +49,7 @@
     <Compile Include="HelpWindow.xaml.cs" />
     <Compile Include="ListWindow.xaml.cs" />
     <Compile Include="SettingsWindow.xaml.cs" />
+    <Compile Include="SevenSegmentDigit.cs" />
     <Compile Include="TaskRow.cs" />
     <Compile Include="TrayIcon.cs" />
     <Compile Include="Services\AutostartRegistration.cs" />

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Tasketier.App.Services;
 using Tasketier.Core;
 
@@ -25,9 +26,18 @@ public partial class AlarmWindow : Window, IDisposable
         InitializeComponent();
         TaskId = task.Id;
         TitleText.Text = task.Title;
-        DueLine.Text = task.Due is DateOnly due && task.DueTime is TimeOnly time
-            ? "due " + due.ToString("ddd d MMM", CultureInfo.CurrentCulture) + " " + time.ToString("HH:mm", CultureInfo.InvariantCulture)
-            : string.Empty;
+        Brush led = (Brush)FindResource("Led");
+        Brush ghost = (Brush)FindResource("LedGhost");
+        SevenSegmentDigit[] digits = [Digit(HourTens, led, ghost), Digit(HourOnes, led, ghost), Digit(MinuteTens, led, ghost), Digit(MinuteOnes, led, ghost)];
+        if (task.Due is DateOnly due && task.DueTime is TimeOnly time)
+        {
+            DueLine.Text = due.ToString("ddd d MMM", CultureInfo.CurrentCulture);
+            string hhmm = time.ToString("HHmm", CultureInfo.InvariantCulture);
+            for (int i = 0; i < 4; i++)
+            {
+                digits[i].Show(hhmm[i]);
+            }
+        }
         Loaded += (_, _) =>
         {
             WindowPlacement.TopRightOfPointerMonitor(this, index);
@@ -52,6 +62,15 @@ public partial class AlarmWindow : Window, IDisposable
         StopSound();
         GC.SuppressFinalize(this);
     }
+
+    private static SevenSegmentDigit Digit(System.Windows.Controls.Canvas host, Brush led, Brush ghost)
+    {
+        var digit = new SevenSegmentDigit(host.Width, led, ghost);
+        host.Children.Add(digit);
+        return digit;
+    }
+
+    private void OnSnoozeBar(object sender, RoutedEventArgs e) => Snooze(1);
 
     private void OnDone(object sender, RoutedEventArgs e)
     {

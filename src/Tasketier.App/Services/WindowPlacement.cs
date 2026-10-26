@@ -34,7 +34,7 @@ public static class WindowPlacement
         DpiScale dpi = VisualTreeHelper.GetDpi(window);
         double right = area.Right / dpi.DpiScaleX;
         double top = area.Top / dpi.DpiScaleY;
-        window.Left = right - window.Width - margin;
+        window.Left = right - window.Width - margin;  // the alarm card is 470 wide
         window.Top = top + margin + index * (window.Height + 12);
     }
 }

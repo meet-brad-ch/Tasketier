@@ -33,8 +33,8 @@ public static class HelpTexts
         Ctrl+F                   the filter; Esc clears it
         Esc                      hide the window (it stays in the tray)
 
-        An alarm shows a card in the corner and beeps until you answer it:
-        Done, Snooze 5 / 15 / 60 min, Disarm. Esc snoozes 1 min. Only Disarm acknowledges.
+        An alarm shows an orange clock in the corner and beeps until you answer it:
+        Done, Snooze 5 / 15 / 60 min, Disarm. The SNOOZE bar and Esc snooze 1 min. Only Disarm acknowledges.
         The default lead (3 min) is in Settings.
         """;
 }

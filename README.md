@@ -35,10 +35,11 @@ task planned for today, with the star. The marks stand in front of the title, th
 
 ![The list window with the Today view: the priority mark and the alarm bell in front of each title, the tags under it, the due day on the right and a pencil at the end of each row](docs/img/list.png)
 
-An alarm card. It beeps until you answer it. Done completes the task, the three middle buttons
-snooze, Disarm acknowledges, and `Esc` snoozes one minute:
+The alarm: a digital clock in the corner of the screen that beeps and rattles until you answer it.
+Done completes the task, the three middle buttons snooze, Disarm acknowledges. The SNOOZE bar on
+top and `Esc` snooze one minute:
 
-![The alarm card: the task title, its due time, and the buttons Done, 5 min, 15 min, 1 h, Disarm](docs/img/alarm.png)
+![The alarm clock: an orange body with a SNOOZE bar, a dark display with the due time in seven-segment digits and the task title, and the buttons Done, 5 min, 15 min, 1 h, Disarm](docs/img/alarm.png)
 
 ## How to run
 
@@ -94,7 +95,7 @@ artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 | Delete | `Del`. `Ctrl+Z` brings the task back. |
 | Undo | `Ctrl+Z`. The app keeps the last 20 changes of the session, captures included. |
 | Filter | Type in the filter box (`Ctrl+F`). The filter matches the title or a `#tag`. |
-| Alarm | `@alarm` on a task with a time: a card in the corner 3 minutes before, with Done, Snooze 5 / 15 / 60 min and Disarm. It beeps until you answer it. `Esc` snoozes 1 minute. Only Disarm acknowledges. `@alarm10` means 10 minutes. The tray app must run. |
+| Alarm | `@alarm` on a task with a time: an orange digital clock in the corner 3 minutes before, with Done, Snooze 5 / 15 / 60 min and Disarm. It beeps until you answer it. The SNOOZE bar and `Esc` snooze 1 minute. Only Disarm acknowledges. `@alarm10` means 10 minutes. The tray app must run. |
 | Help | `?` or `F1` in the capture box or the list. Also in the tray menu. |
 | Settings | Tray menu: both hotkeys, the alarm lead, the data folder, start with Windows |
 
