@@ -17,7 +17,7 @@ writes that file. The desktop app shows each change at once. There is no account
 | what comes later | `list_tasks` view `upcoming` | due after today, by day |
 | undated tasks | `list_tasks` view `inbox` | no date and not planned |
 | what got done | `list_tasks` view `done` | last 30 days, newest first |
-| every open task | `list_tasks` view `all` | overdue first, then by due day, undated last |
+| every task | `list_tasks` view `all` | open ones first (overdue, by due day, undated last), then done ones, newest first |
 | a task done | `complete_task` | needs the `id`. When you only have words, list or search first. |
 | a task reopened | `reopen_task` | |
 | a task changed | `update_task` | the whole new line. Parts that are not in the line are cleared. |

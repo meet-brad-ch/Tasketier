@@ -6,7 +6,7 @@
 
 **What:** A task tool for Windows that keeps all data on the PC. A global hotkey opens a one-line
 box. You type the task with inline marks (`@tomorrow`, `@15:30`, `!`, `#tag`) and press Enter. A
-list window shows Today, Upcoming, Inbox, All and Done. A tray icon keeps the app running.
+list window shows Inbox, Today, Upcoming, Done and All. A tray icon keeps the app running.
 `tasketier.exe` gives the same store a command line and an MCP server. A Claude Code plugin in
 this repo tells an LLM how to use it.
 
@@ -111,8 +111,8 @@ It needs a time. An unknown `@` mark is an error. The box shows it before you pr
 
 **Views:** Today shows overdue tasks first, in red, then tasks due today, then tasks planned for
 today. Upcoming shows tasks due after today, by day. Inbox shows tasks with no date that are not
-planned. All shows every open task, overdue first, then by due day, undated last. Done shows tasks
-completed in the last 30 days.
+planned. Done shows tasks completed in the last 30 days. All shows every task: the open ones first, in the
+same order as Today and Upcoming, then the done ones, newest first.
 
 **Command line:** `tasketier add|list|show|done|undone|edit|delete|plan|unplan|search|mcp|version`.
 `--json` prints records for scripts. `--data <folder>` points at a different `tasks.json`.

@@ -29,7 +29,7 @@ public partial class ListWindow : Window
         _showHelp = showHelp ?? throw new ArgumentNullException(nameof(showHelp));
         InitializeComponent();
         Tasks.ItemsSource = _rows;
-        Views.SelectedIndex = 0;
+        Views.SelectedIndex = 1;  // Today
         Icon = System.Windows.Media.Imaging.BitmapFrame.Create(new Uri("pack://application:,,,/Tasketier.ico"));
     }
 

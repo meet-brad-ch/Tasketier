@@ -64,7 +64,7 @@ public sealed class CommandRunnerTests : IDisposable
     }
 
     [Fact]
-    public async Task List_all_shows_every_open_task()
+    public async Task List_all_shows_every_task_open_ones_first()
     {
         await Run("add", "Later", "@+3d");
         await Run("add", "Now", "@today");
@@ -76,7 +76,7 @@ public sealed class CommandRunnerTests : IDisposable
 
         TaskItem[]? tasks = JsonSerializer.Deserialize<TaskItem[]>(_out.ToString(), TaskJson.Options);
         Assert.NotNull(tasks);
-        Assert.Equal(["Now", "Later"], tasks.Select(t => t.Title));
+        Assert.Equal(["Now", "Later", "Someday"], tasks.Select(t => t.Title));
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public sealed class CommandRunnerTests : IDisposable
         Assert.Equal(ExitCode.Ok, await _runner.RunAsync(["help"]));
         Assert.Contains("Inline syntax", _out.ToString(), StringComparison.Ordinal);
         Assert.Equal(ExitCode.Ok, await _runner.RunAsync(["version"]));
-        Assert.Contains("0.2.4", _out.ToString(), StringComparison.Ordinal);
+        Assert.Contains("0.2.5", _out.ToString(), StringComparison.Ordinal);
     }
 
     [Fact]

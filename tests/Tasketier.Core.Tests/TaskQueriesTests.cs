@@ -90,7 +90,7 @@ public sealed class TaskQueriesTests
     }
 
     [Fact]
-    public void All_holds_every_open_task_overdue_first_then_by_day_then_undated()
+    public void All_holds_every_task_open_ones_first_then_done_ones_newest_first()
     {
         TaskDocument document = Document(
             Task(1, "undated"),
@@ -98,11 +98,12 @@ public sealed class TaskQueriesTests
             Task(3, "overdue", Today.AddDays(-1)),
             Task(4, "today", Today),
             Task(5, "planned", planned: Today),
-            Task(6, "done", completed: Now));
+            Task(6, "done", completed: Now),
+            Task(7, "done earlier", completed: Now.AddDays(-2)));
 
         int[] ids = [.. _queries.List(document, TaskView.All).Select(t => t.Id)];
 
-        Assert.Equal([3, 4, 2, 1, 5], ids);
+        Assert.Equal([3, 4, 2, 1, 5, 6, 7], ids);
     }
 
     [Fact]
