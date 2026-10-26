@@ -31,9 +31,9 @@ parser read from it, before you press Enter:
 ![The capture box with the inline syntax help unfolded](docs/img/capture-help.png)
 
 The list window, Today view. Overdue tasks come first, in red. Then the tasks due today. Then the
-task planned for today, with the star:
+task planned for today, with the star. The marks stand in front of the title, the tags under it:
 
-![The list window with the Today view: four tasks, one overdue, one with a time, a priority mark and an alarm, one starred, a pencil at the end of each row](docs/img/list.png)
+![The list window with the Today view: the priority mark and the alarm bell in front of each title, the tags under it, the due day on the right and a pencil at the end of each row](docs/img/list.png)
 
 An alarm card. It beeps until you answer it. Done completes the task, the three middle buttons
 snooze, Disarm acknowledges, and `Esc` snoozes one minute:

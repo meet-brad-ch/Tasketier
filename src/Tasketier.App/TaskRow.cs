@@ -67,6 +67,9 @@ public sealed class TaskRow : INotifyPropertyChanged
     /// <summary>The alarm as <c>⏰5</c>, or empty.</summary>
     public string AlarmText => Task.AlarmMinutes is int minutes ? "⏰" + minutes.ToString(CultureInfo.InvariantCulture) : string.Empty;
 
+    /// <summary>Whether the task has tags, for the second line of the row.</summary>
+    public bool HasTags => Task.Tags.Count > 0;
+
     /// <summary>The tags as <c>#home #shop</c>.</summary>
     public string TagsText => string.Join(' ', Task.Tags.Select(t => "#" + t));
 

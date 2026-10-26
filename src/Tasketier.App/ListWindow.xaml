@@ -42,11 +42,10 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Priority" />
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Alarm" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Due" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <CheckBox Grid.Column="0" IsChecked="{Binding IsDone, Mode=OneWay}" Click="OnDoneClick" VerticalAlignment="Center" Margin="4,0,8,0" ToolTip="Done" />
@@ -62,12 +61,14 @@
                             </Style>
                         </ToggleButton.Style>
                     </ToggleButton>
-                    <TextBlock Grid.Column="2" Text="{Binding Title}" Style="{StaticResource DoneTitle}" FontSize="14" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" MouseLeftButtonDown="OnTitleMouseDown" />
-                    <TextBlock Grid.Column="3" Text="{Binding TagsText}" Opacity="0.6" VerticalAlignment="Center" Margin="12,0,0,0" />
-                    <TextBlock Grid.Column="4" Text="{Binding PriorityText}" Foreground="#D13B3B" FontWeight="Bold" VerticalAlignment="Center" Margin="12,0,0,0" MinWidth="18" />
-                    <TextBlock Grid.Column="5" Text="{Binding DueText}" Style="{StaticResource OverdueText}" VerticalAlignment="Center" Margin="12,0,4,0" MinWidth="110" TextAlignment="Right" />
-                    <TextBlock Grid.Column="6" Text="{Binding AlarmText}" Opacity="0.7" VerticalAlignment="Center" Margin="4,0,4,0" MinWidth="34" ToolTip="Alarm, minutes before the due time" />
-                    <Button Grid.Column="7" Content="✎" Click="OnEditClick" Width="32" Padding="0" Margin="4,0,0,0" FontSize="14" ToolTip="Edit the line (F2)" />
+                    <TextBlock Grid.Column="2" Text="{Binding PriorityText}" Foreground="#D13B3B" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Priority: ! high, !! urgent" />
+                    <TextBlock Grid.Column="3" Text="{Binding AlarmText}" Opacity="0.7" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Alarm, minutes before the due time" />
+                    <StackPanel Grid.Column="4" VerticalAlignment="Center" MouseLeftButtonDown="OnTitleMouseDown">
+                        <TextBlock Text="{Binding Title}" Style="{StaticResource DoneTitle}" FontSize="14" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding TagsText}" Visibility="{Binding HasTags, Converter={StaticResource VisibleWhenTrue}}" FontSize="12" Opacity="0.6" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="5" Text="{Binding DueText}" Style="{StaticResource OverdueText}" VerticalAlignment="Center" Margin="12,0,0,0" TextAlignment="Right" />
+                    <Button Grid.Column="6" Content="✎" Click="OnEditClick" Width="32" Padding="0" Margin="12,0,0,0" FontSize="14" ToolTip="Edit the line (F2)" />
                 </Grid>
                 <!-- The edit field: the whole line in inline syntax, across the full row. -->
                 <TextBox Text="{Binding EditText, UpdateSourceTrigger=PropertyChanged}"
@@ -111,7 +112,7 @@
                     <TextBox x:Name="FilterBox" Padding="8,5" TextChanged="OnFilterChanged" PreviewKeyDown="OnFilterKeyDown" />
                     <TextBlock x:Name="FilterHint" Text="Filter by title or #tag (Ctrl+F)" Margin="12,0,0,0" VerticalAlignment="Center" Opacity="0.45" IsHitTestVisible="False" />
                 </Grid>
-                <ListView x:Name="Tasks" Grid.Row="1" ItemTemplate="{StaticResource TaskRowTemplate}" HorizontalContentAlignment="Stretch" PreviewKeyDown="OnTasksKeyDown" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView x:Name="Tasks" Grid.Row="1" ItemTemplate="{StaticResource TaskRowTemplate}" HorizontalContentAlignment="Stretch" PreviewKeyDown="OnTasksKeyDown" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.IsSharedSizeScope="True">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
