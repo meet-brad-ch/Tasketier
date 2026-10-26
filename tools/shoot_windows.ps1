@@ -5,12 +5,13 @@ Takes the README screenshots: the capture box with a typed line, the list window
 .DESCRIPTION
 Starts the built app (Debug by default, -Exe for another), opens each window, and saves a PNG of just that
 window into docs\img. Keys are sent only after the foreground window's title is checked, so nothing is
-typed into another program; the script aborts otherwise. Seed the data folder first (see README, Screenshots)
-and stop the app afterwards. The app must not be running when the script starts.
+typed into another program; the script aborts otherwise. Seed a data folder with the CLI (--data) and pass it
+as -Data: the app then runs beside the installed one. Stop that instance afterwards (its title is Tasketier).
 #>
 param(
     [string]$Exe = (Join-Path $PSScriptRoot '..\src\Tasketier.App\bin\Debug\net10.0-windows\TasketierApp.exe'),
-    [string]$OutDir = (Join-Path $PSScriptRoot '..\docs\img')
+    [string]$OutDir = (Join-Path $PSScriptRoot '..\docs\img'),
+    [string]$Data = ''
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
@@ -24,7 +25,8 @@ public static class Win {
   public static string Title() { var sb = new StringBuilder(256); GetWindowText(GetForegroundWindow(), sb, 256); return sb.ToString(); }
 }
 "@
-if (Get-Process TasketierApp -ErrorAction SilentlyContinue) { throw 'TasketierApp is running; stop it first.' }
+if (-not $Data -and (Get-Process TasketierApp -ErrorAction SilentlyContinue)) { throw 'TasketierApp is running; stop it first, or pass -Data with a seeded folder.' }
+$dataArgs = if ($Data) { @('--data', $Data) } else { @() }
 $Exe = (Resolve-Path $Exe).Path
 New-Item -ItemType Directory -Force $OutDir | Out-Null
 
@@ -45,7 +47,7 @@ function Save-Window([string]$Name) {
     Write-Host "saved $Name.png ($w x $h)"
 }
 
-Start-Process -FilePath $Exe -ArgumentList '--capture'
+Start-Process -FilePath $Exe -ArgumentList (@('--capture') + $dataArgs)
 Start-Sleep -Milliseconds 1500
 Expect-Foreground 'Add a task'
 [System.Windows.Forms.SendKeys]::SendWait('Call the dentist @fri @15:30 ! #health')
@@ -59,7 +61,7 @@ Save-Window 'capture-help'
 [System.Windows.Forms.SendKeys]::SendWait('{ESC}')
 Start-Sleep -Milliseconds 600
 
-Start-Process -FilePath $Exe -ArgumentList '--list'
+Start-Process -FilePath $Exe -ArgumentList (@('--list') + $dataArgs)
 Start-Sleep -Milliseconds 1500
 Expect-Foreground 'Tasketier'
 Save-Window 'list'

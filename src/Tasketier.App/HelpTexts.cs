@@ -14,6 +14,7 @@ public static class HelpTexts
         @2026-11-03  @+3d  @+2w  a date, in 3 days, in 2 weeks
         @15:30          the due time; today when no day is given
         @none           no date (wins over other date marks)
+        @alarm  @alarm10   an alarm 3 (or 10) minutes before the due time; needs a time
 
         Examples:
         Call the dentist @fri @15:30 ! #health
@@ -31,5 +32,9 @@ public static class HelpTexts
         Ctrl+Z                   undo the last change (20 kept per session)
         Ctrl+F                   the filter; Esc clears it
         Esc                      hide the window (it stays in the tray)
+
+        An alarm shows a card in the corner and beeps until you answer it:
+        Done, Snooze 5 / 15 / 60 min, Disarm. Esc snoozes 1 min. Only Disarm acknowledges.
+        The default lead (3 min) is in Settings.
         """;
 }

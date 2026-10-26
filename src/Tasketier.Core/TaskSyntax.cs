@@ -5,7 +5,7 @@ namespace Tasketier.Core;
 /// <summary>Writes a task back as one line of inline syntax, so an edit starts from the full text.</summary>
 public static class TaskSyntax
 {
-    /// <summary>The task as the user could have typed it: title, <c>@day</c>, <c>@time</c>, <c>!</c>, <c>#tags</c>.</summary>
+    /// <summary>The task as the user could have typed it: title, <c>@day</c>, <c>@time</c>, <c>@alarmN</c>, <c>!</c>, <c>#tags</c>.</summary>
     /// <param name="task">The task.</param>
     /// <returns>The line.</returns>
     public static string Render(TaskItem task)
@@ -18,6 +18,10 @@ public static class TaskSyntax
             if (task.DueTime is TimeOnly time)
             {
                 parts.Add("@" + time.ToString("HH:mm", CultureInfo.InvariantCulture));
+                if (task.AlarmMinutes is int minutes)
+                {
+                    parts.Add("@alarm" + minutes.ToString(CultureInfo.InvariantCulture));
+                }
             }
         }
         switch (task.Priority)

@@ -5,25 +5,34 @@ namespace Tasketier.Core;
 /// <summary>
 /// Reads one line of inline syntax: words are the title, <c>#tag</c> is a tag, <c>!</c>/<c>!!</c> is the
 /// priority, <c>@today</c> <c>@tomorrow</c> <c>@fri</c> (the next Friday after today) <c>@2026-11-03</c> <c>@+3d</c> set the due day,
-/// <c>@15:30</c> the due time (today when no day is given), <c>@none</c> clears the date.
+/// <c>@15:30</c> the due time (today when no day is given), <c>@none</c> clears the date, <c>@alarm</c> or
+/// <c>@alarm10</c> sets an alarm some minutes before the due time.
 /// </summary>
 public sealed class TaskParser
 {
+    /// <summary>The largest alarm lead: one day.</summary>
+    public const int MaxAlarmMinutes = 1440;
+
     private static readonly string[] DayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 
     private readonly DateOnly _today;
+    private readonly int _defaultAlarmMinutes;
 
     /// <summary>Creates a parser that resolves relative days against a given day.</summary>
     /// <param name="today">The day <c>@today</c> means.</param>
-    public TaskParser(DateOnly today)
+    /// <param name="defaultAlarmMinutes">The minutes a bare <c>@alarm</c> means.</param>
+    public TaskParser(DateOnly today, int defaultAlarmMinutes = AppSettings.DefaultAlarmMinutesValue)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(defaultAlarmMinutes);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(defaultAlarmMinutes, MaxAlarmMinutes);
         _today = today;
+        _defaultAlarmMinutes = defaultAlarmMinutes;
     }
 
     /// <summary>Parses one line.</summary>
     /// <param name="text">The line as typed.</param>
     /// <returns>The parsed parts.</returns>
-    /// <exception cref="TaskParseException">The title is empty or an <c>@</c> mark is unknown.</exception>
+    /// <exception cref="TaskParseException">The title is empty, an <c>@</c> mark is unknown, or an alarm has no due time.</exception>
     public ParsedTask Parse(string text)
     {
         ArgumentNullException.ThrowIfNull(text);
@@ -49,7 +58,11 @@ public sealed class TaskParser
         {
             state.Due = _today;
         }
-        return new ParsedTask(string.Join(' ', state.Words), state.Tags, state.Priority, state.Due, state.Time);
+        if (state.AlarmMinutes is not null && state.Time is null)
+        {
+            throw new TaskParseException("The alarm needs a due time: add a time like @15:30.");
+        }
+        return new ParsedTask(string.Join(' ', state.Words), state.Tags, state.Priority, state.Due, state.Time, state.AlarmMinutes);
     }
 
     private void ReadToken(string token, ParseState state)
@@ -64,7 +77,7 @@ public sealed class TaskParser
         }
         else if (token.Length > 1 && token[0] == '@')
         {
-            ReadDateMark(token[1..], state);
+            ReadAtMark(token[1..], state);
         }
         else if (token is "!" or "!!")
         {
@@ -92,7 +105,7 @@ public sealed class TaskParser
         state.Priority = Max(state.Priority, marks == 1 ? Priority.High : Priority.Urgent);
     }
 
-    private void ReadDateMark(string mark, ParseState state)
+    private void ReadAtMark(string mark, ParseState state)
     {
         string lower = mark.ToLowerInvariant();
         if (lower == "none")
@@ -100,12 +113,30 @@ public sealed class TaskParser
             state.DateCleared = true;  // wins over every other date mark on the line, in any order
             return;
         }
+        if (lower.StartsWith("alarm", StringComparison.Ordinal))
+        {
+            state.AlarmMinutes = ReadAlarm(lower[5..]);
+            return;
+        }
         if (TimeOnly.TryParseExact(mark, ["H:mm", "HH:mm"], CultureInfo.InvariantCulture, DateTimeStyles.None, out TimeOnly parsedTime))
         {
             state.Time = parsedTime;
             return;
         }
-        state.Due = ReadDay(lower) ?? throw new TaskParseException($"Unknown date mark @{mark}. Use @today, @tomorrow, a weekday like @fri, @2026-11-03, @+3d, @15:30 or @none.");
+        state.Due = ReadDay(lower) ?? throw new TaskParseException($"Unknown date mark @{mark}. Use @today, @tomorrow, a weekday like @fri, @2026-11-03, @+3d, @15:30, @alarm, @alarm10 or @none.");
+    }
+
+    private int ReadAlarm(string digits)
+    {
+        if (digits.Length == 0)
+        {
+            return _defaultAlarmMinutes;
+        }
+        if (int.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out int minutes) && minutes <= MaxAlarmMinutes)
+        {
+            return minutes;
+        }
+        throw new TaskParseException($"Unknown alarm mark @alarm{digits}. Use @alarm for the default, or @alarm10 for 10 minutes before (up to {MaxAlarmMinutes}).");
     }
 
     private static Priority Max(Priority a, Priority b) => a > b ? a : b;
@@ -163,5 +194,7 @@ public sealed class TaskParser
         public TimeOnly? Time { get; set; }
 
         public bool DateCleared { get; set; }
+
+        public int? AlarmMinutes { get; set; }
     }
 }

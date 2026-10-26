@@ -27,6 +27,7 @@ public sealed class CommandRunner
 
         Inline syntax: words are the title. #tag adds a tag. ! is high, !! is urgent. @today @tomorrow @fri
         @2026-11-03 @+3d set the due day. @15:30 sets the due time (today when no day). @none removes the date.
+        @alarm or @alarm10 sets an alarm 3 (or 10) minutes before the due time; the tray app shows it.
         """;
 
     private readonly TextWriter _out;
@@ -123,8 +124,8 @@ public sealed class CommandRunner
 
     private TaskService ServiceFor(Arguments arguments)
     {
-        string folder = DataLocation.Resolve(arguments.Value("data"));
-        return new TaskService(new TaskStore(folder, _clock), _clock);
+        DataSource source = DataLocation.Resolve(arguments.Value("data"));
+        return new TaskService(new TaskStore(source.Folder, _clock), _clock, source.DefaultAlarmMinutes);
     }
 
     private static string Text(Arguments arguments, string command)

@@ -102,6 +102,39 @@ public sealed class TaskParserTests
     }
 
     [Fact]
+    public void A_bare_alarm_means_the_default_minutes_and_a_number_sets_them()
+    {
+        Assert.Equal(3, _parser.Parse("Standup @9:00 @alarm").AlarmMinutes);
+        Assert.Equal(10, _parser.Parse("Standup @9:00 @alarm10").AlarmMinutes);
+        Assert.Equal(7, new TaskParser(Monday, 7).Parse("Standup @9:00 @ALARM").AlarmMinutes);
+        Assert.Null(_parser.Parse("Standup @9:00").AlarmMinutes);
+    }
+
+    [Fact]
+    public void An_alarm_without_a_due_time_is_an_error()
+    {
+        TaskParseException error = Assert.Throws<TaskParseException>(() => _parser.Parse("Standup @fri @alarm"));
+
+        Assert.Contains("due time", error.Message, StringComparison.Ordinal);
+        Assert.Throws<TaskParseException>(() => _parser.Parse("Standup @9:00 @none @alarm"));
+    }
+
+    [Theory]
+    [InlineData("@alarmx")]
+    [InlineData("@alarm-5")]
+    [InlineData("@alarm1441")]
+    public void A_bad_alarm_mark_is_an_error(string mark)
+    {
+        Assert.Throws<TaskParseException>(() => _parser.Parse("Standup @9:00 " + mark));
+    }
+
+    [Fact]
+    public void Describe_names_the_alarm()
+    {
+        Assert.Equal("due Mon 2026-10-26 09:00 · alarm 10 min before", _parser.Parse("Standup @9:00 @alarm10").Describe());
+    }
+
+    [Fact]
     public void An_unknown_date_mark_is_an_error_that_names_the_mark()
     {
         TaskParseException error = Assert.Throws<TaskParseException>(() => _parser.Parse("Dentist @soon"));

@@ -16,7 +16,7 @@ must show what is due, what is planned for today and what is done. An LLM must b
 query tasks from a running session.
 
 **Status:** working. Capture box, list window with the five views, inline edit, plan star, undo,
-settings, help, tray, autostart, CLI, MCP server, plugin, installer. Every gate of
+alarms, settings, help, tray, autostart, CLI, MCP server, plugin, installer. Every gate of
 `scriptserify.ps1` passes.
 
 ## Screenshots
@@ -43,6 +43,7 @@ dotnet test  Tasketier.slnx
 dotnet run   --project src\Tasketier.App                 # tray, hotkeys, the list window
 dotnet run   --project src\Tasketier.App -- --capture    # the capture box
 dotnet run   --project src\Tasketier.App -- --tray       # icon only, as at Windows start-up
+dotnet run   --project src\Tasketier.App -- --data D:\t  # another data folder; runs beside the normal instance
 dotnet run   --project src\Tasketier.Cli -- add "Buy milk @tomorrow #home"
 dotnet run   --project src\Tasketier.Cli -- list --view today
 dotnet run   --project src\Tasketier.Cli -- mcp          # the MCP server on stdin/stdout
@@ -88,8 +89,9 @@ artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 | Delete | `Del`. `Ctrl+Z` brings the task back. |
 | Undo | `Ctrl+Z`. The app keeps the last 20 changes of the session, captures included. |
 | Filter | Type in the filter box (`Ctrl+F`). The filter matches the title or a `#tag`. |
+| Alarm | `@alarm` on a task with a time: a card in the corner 3 minutes before, with Done, Snooze 5 / 15 / 60 min and Disarm. It beeps until you answer it. `Esc` snoozes 1 minute. Only Disarm acknowledges. `@alarm10` means 10 minutes. The tray app must run. |
 | Help | `?` or `F1` in the capture box or the list. Also in the tray menu. |
-| Settings | Tray menu: both hotkeys, the data folder, start with Windows |
+| Settings | Tray menu: both hotkeys, the alarm lead, the data folder, start with Windows |
 
 You can change both hotkeys in Settings. When another program holds a chord, the tray shows a
 message, and that hotkey stays off until you change it. The defaults avoid chords that common
@@ -98,8 +100,8 @@ tools hold, such as `Ctrl+Alt+Space` and `Ctrl+Alt+T`.
 **Inline syntax:** Words are the title. `#tag` adds a tag. `!` is high priority, `!!` is urgent.
 Both also work as a suffix: `Pay rent!!`. `@today`, `@tomorrow`, `@mon` to `@sun`, `@2026-11-03`,
 `@+3d` and `@+2w` set the due day. A weekday means the next such day after today. `@15:30`
-sets the time. Without a day, the time means today. `@none` removes the date. An unknown `@` mark
-is an error. The box shows it before you press Enter.
+sets the time. Without a day, the time means today. `@none` removes the date. `@alarm` or `@alarm10` sets an alarm 3 or 10 minutes before the due time.
+It needs a time. An unknown `@` mark is an error. The box shows it before you press Enter.
 
 **Views:** Today shows overdue tasks first, in red, then tasks due today, then tasks planned for
 today. Upcoming shows tasks due after today, by day. Inbox shows tasks with no date that are not
@@ -139,9 +141,10 @@ replaces a damaged file. There is no network access and no telemetry.
 ## Layout
 
 - `src/Tasketier.Core/` — a library without UI code: task model, inline-syntax parser, JSON store
-  (mutex, atomic replace, daily backup, file watcher), view queries, service, undo, settings.
-- `src/Tasketier.App/` — WPF (`TasketierApp.exe`): capture window, list window, help window,
-  settings window, tray icon, global hotkeys, instance signals, autostart.
+  (mutex, atomic replace, daily backup, file watcher), view queries, alarm scheduler, service, undo,
+  settings.
+- `src/Tasketier.App/` — WPF (`TasketierApp.exe`): capture window, list window, alarm card, help
+  window, settings window, tray icon, global hotkeys, instance signals, autostart.
 - `src/Tasketier.Cli/` — console (`tasketier.exe`): the commands and the `mcp` server
   (`ModelContextProtocol` 2.3.0).
 - `plugin/` — the Claude Code plugin. `.claude-plugin/marketplace.json` at the root lists it.
@@ -149,7 +152,8 @@ replaces a damaged file. There is no network access and no telemetry.
   real exe as an MCP server and drive it with the SDK client.
 - `installer/Tasketier.iss`, `build-installer.ps1` — the Inno Setup installer.
 - `scripts/verify.ps1` — the quality gates.
-- `tools/make_icon.py` — draws the icon. `tools/shoot_windows.ps1` — takes the README screenshots
+- `tools/make_icon.py` — draws the icon. `tools/make_alarm_sound.py` — writes the alarm beeps.
+  `tools/shoot_windows.ps1` — takes the README screenshots
   from a seeded data folder (see its header).
 - `docs/img/` — the README screenshots.
 

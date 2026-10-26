@@ -140,6 +140,35 @@ public sealed class TaskServiceTests : IDisposable
     }
 
     [Fact]
+    public void An_alarm_fires_once_and_fires_again_after_the_time_changes()
+    {
+        TaskItem task = _service.Add("Standup @today @12:10 @alarm5");
+        Assert.Equal(5, task.AlarmMinutes);
+
+        _clock.Advance(TimeSpan.FromMinutes(6));  // 12:06, past the 12:05 alarm instant
+        Assert.Equal([task.Id], _service.DueAlarms().Select(t => t.Id));
+
+        TaskItem fired = _service.MarkAlarmFired(task.Id);
+        Assert.Equal(_clock.Now, fired.AlarmFired);
+        Assert.Empty(_service.DueAlarms());
+
+        TaskItem moved = _service.Edit(task.Id, "Standup @today @12:20 @alarm5");
+        Assert.Null(moved.AlarmFired);
+        _clock.Advance(TimeSpan.FromMinutes(10));  // 12:16
+        Assert.Equal([task.Id], _service.DueAlarms().Select(t => t.Id));
+    }
+
+    [Fact]
+    public void Editing_away_the_time_drops_the_alarm()
+    {
+        TaskItem task = _service.Add("Standup @today @12:10 @alarm");
+
+        TaskItem edited = _service.Edit(task.Id, "Standup @today");
+
+        Assert.Null(edited.AlarmMinutes);
+    }
+
+    [Fact]
     public void Preview_parses_without_storing()
     {
         ParsedTask parsed = _service.Preview("Milk @fri");

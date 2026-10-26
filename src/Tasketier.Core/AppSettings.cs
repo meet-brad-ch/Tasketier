@@ -9,6 +9,12 @@ public sealed class AppSettings
     /// <summary>The default list hotkey.</summary>
     public const string DefaultListHotkey = "Ctrl+Alt+L";
 
+    /// <summary>The minutes a bare <c>@alarm</c> means until the user changes it.</summary>
+    public const int DefaultAlarmMinutesValue = 3;
+
+    /// <summary>The minutes before the due time a bare <c>@alarm</c> means.</summary>
+    public int DefaultAlarmMinutes { get; set; } = DefaultAlarmMinutesValue;
+
     /// <summary>The hotkey that opens the capture box.</summary>
     public string CaptureHotkey { get; set; } = DefaultCaptureHotkey;
 

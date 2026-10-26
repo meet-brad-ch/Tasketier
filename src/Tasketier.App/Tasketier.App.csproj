@@ -31,14 +31,17 @@
 
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="AlarmWindow.xaml" />
     <Page Include="CaptureWindow.xaml" />
     <Page Include="HelpWindow.xaml" />
     <Page Include="ListWindow.xaml" />
     <Page Include="SettingsWindow.xaml" />
     <Resource Include="Tasketier.ico" />
+    <Resource Include="alarm.wav" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="AlarmWindow.xaml.cs" />
     <Compile Include="App.xaml.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CaptureWindow.xaml.cs" />

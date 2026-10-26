@@ -18,6 +18,14 @@ public sealed class TaskSyntaxTests
     }
 
     [Fact]
+    public void Render_writes_the_alarm_after_the_time()
+    {
+        var task = new TaskItem { Title = "Standup", Due = new DateOnly(2026, 10, 26), DueTime = new TimeOnly(9, 0), AlarmMinutes = 5 };
+
+        Assert.Equal("Standup @2026-10-26 @09:00 @alarm5", TaskSyntax.Render(task));
+    }
+
+    [Fact]
     public void Render_of_a_bare_task_is_its_title()
     {
         Assert.Equal("Buy milk", TaskSyntax.Render(new TaskItem { Title = "Buy milk" }));

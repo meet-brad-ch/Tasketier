@@ -27,7 +27,7 @@ writes that file. The desktop app shows each change at once. There is no account
 | one task's details | `get_task` | |
 
 Each tool returns JSON records. A task has `id`, `title`, `tags`, `priority` (None, High, Urgent),
-`due` (a date), `dueTime`, `plannedFor`, `created`, `completed` and `isDone`.
+`due` (a date), `dueTime`, `plannedFor`, `alarmMinutes`, `alarmFired`, `created`, `completed` and `isDone`.
 
 ## Inline syntax (for add_task and update_task)
 
@@ -39,6 +39,8 @@ Words are the title. Marks can stand anywhere in the line:
   means the next such day after today. On a Monday, `@mon` is the Monday in one week.
 - `@15:30` - the due time. Without a day, it means today.
 - `@none` - no date. It wins over every other date mark on the line.
+- `@alarm` or `@alarm10` - an alarm 3 (the user's default) or 10 minutes before the due time. It
+  needs a due time on the line. The desktop app shows the alarm; the server only stores it.
 
 Examples: `Call the dentist @fri @15:30 ! #health`, `Buy milk @tomorrow #home`, `Renew passport @+2w !!`.
 

@@ -19,7 +19,7 @@ public sealed class TaskTable
         _queries = queries ?? throw new ArgumentNullException(nameof(queries));
     }
 
-    /// <summary>One line per task: id, done box, due, priority, title, tags.</summary>
+    /// <summary>One line per task: id, done box, due, priority, alarm (<c>a5</c> = 5 minutes before), title, tags.</summary>
     /// <param name="tasks">The tasks, in the order to print.</param>
     /// <returns>The lines, or "(no tasks)".</returns>
     public string Render(IReadOnlyList<TaskItem> tasks)
@@ -37,6 +37,7 @@ public sealed class TaskTable
             text.Append(task.IsDone ? "  [x]  " : "  [ ]  ");
             text.Append(Due(task).PadRight(DueWidth));
             text.Append(Priority(task).PadRight(4));
+            text.Append(Alarm(task).PadRight(6));
             text.Append(task.Title);
             foreach (string tag in task.Tags)
             {
@@ -69,6 +70,8 @@ public sealed class TaskTable
         }
         return _queries.IsOverdue(task) ? text + " !" : text;
     }
+
+    private static string Alarm(TaskItem task) => task.AlarmMinutes is int minutes ? "a" + minutes.ToString(CultureInfo.InvariantCulture) : string.Empty;
 
     private static string Priority(TaskItem task) => task.Priority switch
     {

@@ -24,6 +24,12 @@ public sealed class TaskItem
     /// <summary>The day the task was pulled into Today, or null.</summary>
     public DateOnly? PlannedFor { get; set; }
 
+    /// <summary>Minutes before the due time at which the alarm fires, or null for no alarm. Only with <see cref="DueTime"/>.</summary>
+    public int? AlarmMinutes { get; set; }
+
+    /// <summary>When the alarm fired, or null while it has not. Cleared when the due time or the alarm changes.</summary>
+    public DateTimeOffset? AlarmFired { get; set; }
+
     /// <summary>When the task was added.</summary>
     public DateTimeOffset Created { get; set; }
 
@@ -44,6 +50,8 @@ public sealed class TaskItem
         Due = Due,
         DueTime = DueTime,
         PlannedFor = PlannedFor,
+        AlarmMinutes = AlarmMinutes,
+        AlarmFired = AlarmFired,
         Created = Created,
         Completed = Completed,
     };

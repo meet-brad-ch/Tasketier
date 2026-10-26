@@ -20,6 +20,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Capture hotkey" VerticalAlignment="Center" Margin="0,0,12,8" />
@@ -30,15 +31,21 @@
 
         <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="Click a hotkey box and press the keys: at least one of Ctrl, Alt, Shift or Win plus a key." Opacity="0.6" TextWrapping="Wrap" Margin="0,0,0,12" />
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Data folder" VerticalAlignment="Center" Margin="0,0,12,8" />
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="FolderBox" Margin="0,0,8,8" />
-        <Button Grid.Row="3" Grid.Column="2" Content="Browse…" Click="OnBrowse" Margin="0,0,0,8" Padding="12,4" />
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Alarm lead" VerticalAlignment="Center" Margin="0,0,12,8" />
+        <DockPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,12">
+            <TextBlock DockPanel.Dock="Right" Text="minutes before the due time, for a bare @alarm" Opacity="0.6" VerticalAlignment="Center" Margin="8,0,0,0" />
+            <TextBox x:Name="AlarmBox" Width="60" HorizontalAlignment="Left" />
+        </DockPanel>
 
-        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="FolderHint" Opacity="0.6" TextWrapping="Wrap" Margin="0,0,0,12" />
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Data folder" VerticalAlignment="Center" Margin="0,0,12,8" />
+        <TextBox Grid.Row="4" Grid.Column="1" x:Name="FolderBox" Margin="0,0,8,8" />
+        <Button Grid.Row="4" Grid.Column="2" Content="Browse…" Click="OnBrowse" Margin="0,0,0,8" Padding="12,4" />
 
-        <CheckBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="AutostartBox" Content="Start Tasketier with Windows (tray icon and hotkeys)" Margin="0,0,0,16" />
+        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="FolderHint" Opacity="0.6" TextWrapping="Wrap" Margin="0,0,0,12" />
 
-        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+        <CheckBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" x:Name="AutostartBox" Content="Start Tasketier with Windows (tray icon, hotkeys and alarms)" Margin="0,0,0,16" />
+
+        <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <TextBlock x:Name="Error" Foreground="#D13B3B" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="Wrap" MaxWidth="300" />
             <Button Content="Save" IsDefault="True" Click="OnSave" Padding="18,4" Margin="0,0,8,0" />
             <Button Content="Cancel" IsCancel="True" Padding="18,4" />

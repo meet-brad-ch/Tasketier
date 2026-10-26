@@ -19,7 +19,7 @@
                 <TextBox x:Name="Input" FontSize="18" Padding="10,8" TextChanged="OnTextChanged" PreviewKeyDown="OnPreviewKeyDown" />
             </DockPanel>
             <TextBlock x:Name="Preview" Margin="4,8,4,0" FontSize="13" Opacity="0.75" TextTrimming="CharacterEllipsis" />
-            <TextBlock Margin="4,6,4,0" FontSize="11" Opacity="0.5" Text="Enter saves · Esc cancels · @today @tomorrow @mon…@sun @2026-11-03 @+3d due day · @15:30 time · ! !! priority · #tag · @none · ? or F1" />
+            <TextBlock Margin="4,6,4,0" FontSize="11" Opacity="0.5" Text="Enter saves · Esc cancels · @today @tomorrow @mon…@sun @2026-11-03 @+3d due day · @15:30 time · @alarm10 · ! !! priority · #tag · @none · ? or F1" />
             <TextBlock x:Name="HelpText" Margin="4,10,4,0" FontFamily="Consolas" FontSize="12" Opacity="0.85" TextWrapping="Wrap"
                        Visibility="{Binding IsChecked, ElementName=HelpToggle, Converter={StaticResource VisibleWhenTrue}}" />
         </StackPanel>

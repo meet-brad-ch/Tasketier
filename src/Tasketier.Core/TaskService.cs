@@ -5,14 +5,17 @@ public sealed class TaskService
 {
     private readonly TaskStore _store;
     private readonly TimeProvider _clock;
+    private readonly int _defaultAlarmMinutes;
 
     /// <summary>Creates the service.</summary>
     /// <param name="store">The store.</param>
     /// <param name="clock">The clock; its local date is "today".</param>
-    public TaskService(TaskStore store, TimeProvider clock)
+    /// <param name="defaultAlarmMinutes">The minutes a bare <c>@alarm</c> means.</param>
+    public TaskService(TaskStore store, TimeProvider clock, int defaultAlarmMinutes = AppSettings.DefaultAlarmMinutesValue)
     {
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _defaultAlarmMinutes = defaultAlarmMinutes;
     }
 
     /// <summary>The store.</summary>
@@ -25,7 +28,7 @@ public sealed class TaskService
     /// <param name="text">The line.</param>
     /// <returns>The parsed parts.</returns>
     /// <exception cref="TaskParseException">The line cannot be read.</exception>
-    public ParsedTask Preview(string text) => new TaskParser(Today).Parse(text);
+    public ParsedTask Preview(string text) => new TaskParser(Today, _defaultAlarmMinutes).Parse(text);
 
     /// <summary>Adds a task from one line of inline syntax.</summary>
     /// <param name="text">The line.</param>
@@ -129,17 +132,32 @@ public sealed class TaskService
     /// <returns>The tasks.</returns>
     public IReadOnlyList<TaskItem> Search(string text) => Queries().Search(_store.Read(), text);
 
+    /// <summary>The open tasks whose alarm is due now and has not fired.</summary>
+    /// <returns>The tasks, earliest alarm first.</returns>
+    public IReadOnlyList<TaskItem> DueAlarms() => AlarmScheduler.Due(_store.Read(), _clock.GetLocalNow(), _clock.LocalTimeZone);
+
+    /// <summary>Records that a task's alarm fired, so it does not fire again.</summary>
+    /// <param name="id">The task.</param>
+    /// <returns>The task after the change.</returns>
+    public TaskItem MarkAlarmFired(int id) => Change(id, task => task.AlarmFired = _clock.GetLocalNow());
+
     /// <summary>The view queries at this moment.</summary>
     /// <returns>The queries.</returns>
     public TaskQueries Queries() => new(_clock.GetLocalNow());
 
     private static void Apply(ParsedTask parsed, TaskItem task)
     {
+        bool alarmChanged = task.Due != parsed.Due || task.DueTime != parsed.DueTime || task.AlarmMinutes != parsed.AlarmMinutes;
         task.Title = parsed.Title;
         task.Tags = parsed.Tags;
         task.Priority = parsed.Priority;
         task.Due = parsed.Due;
         task.DueTime = parsed.Due is null ? null : parsed.DueTime;
+        task.AlarmMinutes = task.DueTime is null ? null : parsed.AlarmMinutes;
+        if (alarmChanged)
+        {
+            task.AlarmFired = null;  // a moved or changed alarm fires again
+        }
     }
 
     private static int IndexOf(TaskDocument document, int id)

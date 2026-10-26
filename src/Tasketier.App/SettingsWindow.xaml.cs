@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using System.Runtime.Versioning;
 using System.Windows;
@@ -26,6 +27,7 @@ public partial class SettingsWindow : Window
         CaptureBox.Text = current.CaptureHotkey;
         ListBox.Text = current.ListHotkey;
         FolderBox.Text = current.DataFolder;
+        AlarmBox.Text = current.DefaultAlarmMinutes.ToString(CultureInfo.InvariantCulture);
         AutostartBox.IsChecked = current.StartWithWindows;
         FolderHint.Text = $"Empty means {defaultFolder}. A synced folder carries the tasks between PCs. The file is tasks.json.";
     }
@@ -103,11 +105,17 @@ public partial class SettingsWindow : Window
             Error.Text = $"The folder {folder} does not exist.";
             return;
         }
+        if (!int.TryParse(AlarmBox.Text.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out int alarmMinutes) || alarmMinutes > TaskParser.MaxAlarmMinutes)
+        {
+            Error.Text = $"The alarm lead must be a whole number of minutes, 0 to {TaskParser.MaxAlarmMinutes}.";
+            return;
+        }
         Result = new AppSettings
         {
             CaptureHotkey = CaptureBox.Text,
             ListHotkey = ListBox.Text,
             DataFolder = folder,
+            DefaultAlarmMinutes = alarmMinutes,
             StartWithWindows = AutostartBox.IsChecked == true,
         };
         DialogResult = true;
