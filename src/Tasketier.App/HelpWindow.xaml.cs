@@ -17,6 +17,6 @@ public partial class HelpWindow : Window
         Icon = System.Windows.Media.Imaging.BitmapFrame.Create(new Uri("pack://application:,,,/Tasketier.ico"));
         SyntaxText.Text = HelpTexts.Syntax;
         ShortcutsText.Text = HelpTexts.Shortcuts;
-        HotkeysText.Text = $"From any window: {settings.CaptureHotkey} opens the capture box, {settings.ListHotkey} the list. Both are changeable in Settings (tray menu).";
+        HotkeysText.Text = $"From any window: {settings.CaptureHotkey} opens the capture box, {settings.ListHotkey} opens the list. You can change both in Settings (tray menu).";
     }
 }

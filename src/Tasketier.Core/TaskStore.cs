@@ -89,7 +89,7 @@ public sealed class TaskStore
         {
             if (!mutex.WaitOne(LockTimeout))
             {
-                throw new TimeoutException($"Another Tasketier process has held the lock on {FilePath} for more than {LockTimeout.TotalSeconds} s.");
+                throw new TimeoutException($"Another Tasketier process holds the lock on {FilePath} for more than {LockTimeout.TotalSeconds} s.");
             }
         }
         catch (AbandonedMutexException)

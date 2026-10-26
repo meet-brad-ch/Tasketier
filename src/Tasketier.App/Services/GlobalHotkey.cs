@@ -32,7 +32,7 @@ public sealed class GlobalHotkey : IDisposable
         {
             var cause = new Win32Exception(Marshal.GetLastWin32Error());
             _source.Dispose();
-            throw new HotkeyRegistrationException($"The hotkey {chord} could not be registered: {cause.Message} Another program may hold it; choose a different one in Settings.", cause);
+            throw new HotkeyRegistrationException($"The hotkey {chord} could not be registered: {cause.Message} Another program may hold it. Choose a different hotkey in Settings.", cause);
         }
         _registered = true;
     }
@@ -59,7 +59,7 @@ public sealed class GlobalHotkey : IDisposable
     {
         if (!Enum.TryParse(chord.Key, ignoreCase: true, out Key key) || key == Key.None)
         {
-            throw new HotkeyRegistrationException($"'{chord.Key}' in {chord} is not a key name; use names like Space, T, F12, OemTilde.");
+            throw new HotkeyRegistrationException($"'{chord.Key}' in {chord} is not a key name. Use names like Space, T, F12, OemTilde.");
         }
         return (uint)KeyInterop.VirtualKeyFromKey(key);
     }

@@ -32,7 +32,7 @@ public sealed class TaskStoreDamagedException : Exception
         ArgumentNullException.ThrowIfNull(innerException);
         string folder = Path.GetDirectoryName(path) ?? string.Empty;
         return new TaskStoreDamagedException(
-            $"The task file {path} cannot be read: {innerException.Message} Daily backups are in {Path.Combine(folder, TaskStore.BackupFolderName)}; restore one by hand or move the damaged file away.",
+            $"The task file {path} cannot be read: {innerException.Message} Daily backups are in {Path.Combine(folder, TaskStore.BackupFolderName)}. Restore one by hand, or move the damaged file away.",
             innerException);
     }
 }

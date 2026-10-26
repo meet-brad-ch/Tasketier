@@ -10,7 +10,7 @@ public sealed class CommandRunner
     private const string Help = """
         tasketier - local task capture and planning
 
-        tasketier add <text>                 add a task; text uses the inline syntax (see below)
+        tasketier add <text>                 add a task. The text uses the inline syntax (see below).
         tasketier list [--view today|upcoming|inbox|done] [--filter <text>]
         tasketier show <id>
         tasketier done <id>                  complete
@@ -25,8 +25,8 @@ public sealed class CommandRunner
 
         Options: --json (records instead of lines), --data <folder> (the folder with tasks.json).
 
-        Inline syntax: words are the title; #tag; ! high, !! urgent; @today @tomorrow @fri
-        @2026-11-03 @+3d set the due day; @15:30 the due time (today when no day); @none clears.
+        Inline syntax: words are the title. #tag adds a tag. ! is high, !! is urgent. @today @tomorrow @fri
+        @2026-11-03 @+3d set the due day. @15:30 sets the due time (today when no day). @none removes the date.
         """;
 
     private readonly TextWriter _out;

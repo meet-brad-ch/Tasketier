@@ -38,7 +38,7 @@ public sealed class TaskParser
         }
         if (state.Words.Count == 0)
         {
-            throw new TaskParseException("The task needs a title: some words besides the #, @ and ! marks.");
+            throw new TaskParseException("The task needs a title: some words that are not #, @ or ! marks.");
         }
         if (state.DateCleared)
         {

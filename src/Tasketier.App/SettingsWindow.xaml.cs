@@ -27,7 +27,7 @@ public partial class SettingsWindow : Window
         ListBox.Text = current.ListHotkey;
         FolderBox.Text = current.DataFolder;
         AutostartBox.IsChecked = current.StartWithWindows;
-        FolderHint.Text = $"Empty means {defaultFolder}. Point it at a synced folder to carry the tasks between PCs; the file is tasks.json.";
+        FolderHint.Text = $"Empty means {defaultFolder}. A synced folder carries the tasks between PCs. The file is tasks.json.";
     }
 
     /// <summary>The settings as saved, or null when the dialog was cancelled.</summary>

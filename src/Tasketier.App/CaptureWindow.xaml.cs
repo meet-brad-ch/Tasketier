@@ -109,7 +109,7 @@ public partial class CaptureWindow : Window
         timer.Start();
     }
 
-    private void ShowHint() => ShowPreview("Type a task. The due day, time, priority and tags are read from the text.", isError: false);
+    private void ShowHint() => ShowPreview("Type a task. The parser reads the due day, the time, the priority and the tags from the text.", isError: false);
 
     private void ShowPreview(string text, bool isError)
     {
