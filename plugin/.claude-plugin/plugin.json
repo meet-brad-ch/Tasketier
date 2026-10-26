@@ -1,0 +1,9 @@
+{
+  "name": "tasketier",
+  "description": "Add, list, complete, plan and search the user's Tasketier tasks through the tasketier MCP server (local task capture and planning on this PC).",
+  "version": "0.1.0",
+  "author": {
+    "name": "Brad Chamberlain"
+  },
+  "license": "MIT"
+}

@@ -4,10 +4,10 @@ namespace Tasketier.Core;
 public sealed class AppSettings
 {
     /// <summary>The default capture hotkey.</summary>
-    public const string DefaultCaptureHotkey = "Ctrl+Alt+Space";
+    public const string DefaultCaptureHotkey = "Ctrl+Alt+A";
 
     /// <summary>The default list hotkey.</summary>
-    public const string DefaultListHotkey = "Ctrl+Alt+T";
+    public const string DefaultListHotkey = "Ctrl+Alt+L";
 
     /// <summary>The hotkey that opens the capture box.</summary>
     public string CaptureHotkey { get; set; } = DefaultCaptureHotkey;

@@ -1,0 +1,13 @@
+{
+  "name": "tasketier",
+  "owner": {
+    "name": "Brad Chamberlain"
+  },
+  "plugins": [
+    {
+      "name": "tasketier",
+      "source": "./plugin",
+      "description": "The Tasketier skill and MCP server: add, list, complete, plan and search the user's local tasks from Claude Code."
+    }
+  ]
+}

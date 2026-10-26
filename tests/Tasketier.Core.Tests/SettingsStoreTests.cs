@@ -13,8 +13,8 @@ public sealed class SettingsStoreTests : IDisposable
     {
         AppSettings settings = Store().Load();
 
-        Assert.Equal("Ctrl+Alt+Space", settings.CaptureHotkey);
-        Assert.Equal("Ctrl+Alt+T", settings.ListHotkey);
+        Assert.Equal("Ctrl+Alt+A", settings.CaptureHotkey);
+        Assert.Equal("Ctrl+Alt+L", settings.ListHotkey);
         Assert.Equal(string.Empty, settings.DataFolder);
         Assert.False(settings.StartWithWindows);
     }

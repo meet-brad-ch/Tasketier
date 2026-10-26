@@ -94,33 +94,31 @@ public sealed class CommandRunner
             case "list":
                 Print(service.List(View(arguments.Value("view")), arguments.Value("filter") ?? string.Empty), service, json);
                 break;
-            case "show":
-                Print(service.Get(Id(arguments)), json, string.Empty);
-                break;
-            case "done":
-                Print(service.Complete(Id(arguments)), json, "Completed ");
-                break;
-            case "undone":
-                Print(service.Uncomplete(Id(arguments)), json, "Reopened ");
-                break;
-            case "edit":
-                Print(service.Edit(Id(arguments), string.Join(' ', arguments.Rest.Skip(1))), json, "Edited ");
-                break;
-            case "delete":
-                Print(service.Delete(Id(arguments)), json, "Deleted ");
-                break;
-            case "plan":
-                Print(service.Plan(Id(arguments)), json, "Planned for today: ");
-                break;
-            case "unplan":
-                Print(service.Unplan(Id(arguments)), json, "Unplanned ");
-                break;
             case "search":
                 Print(service.Search(Text(arguments, "search")), service, json);
                 break;
             default:
-                throw new UsageException($"Unknown command '{arguments.Command}'.");
+                RunIdCommand(arguments, service, json);
+                break;
         }
+    }
+
+    /// <summary>The commands that take a task id first.</summary>
+    private void RunIdCommand(Arguments arguments, TaskService service, bool json)
+    {
+        int id = Id(arguments);
+        (TaskItem task, string prefix) = arguments.Command switch
+        {
+            "show" => (service.Get(id), string.Empty),
+            "done" => (service.Complete(id), "Completed "),
+            "undone" => (service.Uncomplete(id), "Reopened "),
+            "edit" => (service.Edit(id, string.Join(' ', arguments.Rest.Skip(1))), "Edited "),
+            "delete" => (service.Delete(id), "Deleted "),
+            "plan" => (service.Plan(id), "Planned for today: "),
+            "unplan" => (service.Unplan(id), "Unplanned "),
+            _ => throw new UsageException($"Unknown command '{arguments.Command}'."),
+        };
+        Print(task, json, prefix);
     }
 
     private TaskService ServiceFor(Arguments arguments)
@@ -139,8 +137,14 @@ public sealed class CommandRunner
         return text;
     }
 
+    private static readonly string[] IdCommands = ["show", "done", "undone", "edit", "delete", "plan", "unplan"];
+
     private static int Id(Arguments arguments)
     {
+        if (!IdCommands.Contains(arguments.Command, StringComparer.Ordinal))
+        {
+            throw new UsageException($"Unknown command '{arguments.Command}'.");
+        }
         if (arguments.Rest.Count == 0 || !int.TryParse(arguments.Rest[0], NumberStyles.None, CultureInfo.InvariantCulture, out int id))
         {
             throw new UsageException($"'{arguments.Command}' needs a task id: tasketier {arguments.Command} 12");

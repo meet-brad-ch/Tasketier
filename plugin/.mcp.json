@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "tasketier": {
+      "command": "${ProgramFiles}\\Tasketier\\tasketier.exe",
+      "args": ["mcp"]
+    }
+  }
+}

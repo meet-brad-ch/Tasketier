@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- WinForms only for System.Windows.Forms.NotifyIcon and Screen; the Desktop Runtime ships it, no package. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>Tasketier.App</RootNamespace>
+    <!-- The CLI is tasketier.exe; Windows file names are case-insensitive, so the app gets its own name. -->
+    <AssemblyName>TasketierApp</AssemblyName>
+    <ApplicationIcon>Tasketier.ico</ApplicationIcon>
+    <!-- LibraryImport (source-generated P/Invoke) needs it; no unsafe code is written by hand. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Every public type and member must carry an XML doc comment; CS1591 fails the build. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- XAML items are listed by name too. -->
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tasketier.Core\Tasketier.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- WinForms is referenced for NotifyIcon and Screen only; its implicit usings would clash with WPF names. -->
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+    <Page Include="CaptureWindow.xaml" />
+    <Page Include="HelpWindow.xaml" />
+    <Page Include="ListWindow.xaml" />
+    <Page Include="SettingsWindow.xaml" />
+    <Resource Include="Tasketier.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="App.xaml.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CaptureWindow.xaml.cs" />
+    <Compile Include="HelpTexts.cs" />
+    <Compile Include="HelpWindow.xaml.cs" />
+    <Compile Include="ListWindow.xaml.cs" />
+    <Compile Include="SettingsWindow.xaml.cs" />
+    <Compile Include="TaskRow.cs" />
+    <Compile Include="TrayIcon.cs" />
+    <Compile Include="Services\AutostartRegistration.cs" />
+    <Compile Include="Services\ForegroundWindow.cs" />
+    <Compile Include="Services\GlobalHotkey.cs" />
+    <Compile Include="Services\HotkeyRegistrationException.cs" />
+    <Compile Include="Services\InstanceSignal.cs" />
+    <Compile Include="Services\NativeMethods.cs" />
+    <Compile Include="Services\WindowPlacement.cs" />
+  </ItemGroup>
+
+</Project>

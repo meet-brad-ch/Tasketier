@@ -27,60 +27,58 @@ public sealed class TaskParser
     public ParsedTask Parse(string text)
     {
         ArgumentNullException.ThrowIfNull(text);
-        var words = new List<string>();
-        var tags = new List<string>();
-        Priority priority = Priority.None;
-        DateOnly? due = null;
-        TimeOnly? time = null;
-        bool dateCleared = false;
+        var state = new ParseState();
         foreach (string token in text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
         {
-            if (token.Length > 1 && token[0] == '#')
-            {
-                string tag = token[1..].ToLowerInvariant();
-                if (!tags.Contains(tag, StringComparer.Ordinal))
-                {
-                    tags.Add(tag);
-                }
-            }
-            else if (token.Length > 1 && token[0] == '@')
-            {
-                ReadDateMark(token[1..], ref due, ref time, ref dateCleared);
-            }
-            else if (token is "!" or "!!")
-            {
-                priority = Max(priority, token.Length == 1 ? Priority.High : Priority.Urgent);
-            }
-            else
-            {
-                words.Add(token);
-            }
+            ReadToken(token, state);
         }
-        if (words.Count > 0)
+        if (state.Words.Count > 0)
         {
-            StripTrailingMarks(words, ref priority);
+            StripTrailingMarks(state);
         }
-        if (words.Count == 0)
+        if (state.Words.Count == 0)
         {
             throw new TaskParseException("The task needs a title: some words besides the #, @ and ! marks.");
         }
-        if (dateCleared)
+        if (state.DateCleared)
         {
-            due = null;
-            time = null;
+            state.Due = null;
+            state.Time = null;
         }
-        else if (due is null && time is not null)
+        else if (state.Due is null && state.Time is not null)
         {
-            due = _today;
+            state.Due = _today;
         }
-        return new ParsedTask(string.Join(' ', words), tags, priority, due, time);
+        return new ParsedTask(string.Join(' ', state.Words), state.Tags, state.Priority, state.Due, state.Time);
     }
 
-    private static Priority Max(Priority a, Priority b) => a > b ? a : b;
-
-    private static void StripTrailingMarks(List<string> words, ref Priority priority)
+    private void ReadToken(string token, ParseState state)
     {
-        string last = words[^1];
+        if (token.Length > 1 && token[0] == '#')
+        {
+            string tag = token[1..].ToLowerInvariant();
+            if (!state.Tags.Contains(tag, StringComparer.Ordinal))
+            {
+                state.Tags.Add(tag);
+            }
+        }
+        else if (token.Length > 1 && token[0] == '@')
+        {
+            ReadDateMark(token[1..], state);
+        }
+        else if (token is "!" or "!!")
+        {
+            state.Priority = Max(state.Priority, token.Length == 1 ? Priority.High : Priority.Urgent);
+        }
+        else
+        {
+            state.Words.Add(token);
+        }
+    }
+
+    private static void StripTrailingMarks(ParseState state)
+    {
+        string last = state.Words[^1];
         int marks = 0;
         while (marks < 2 && last.Length - marks > 1 && last[^(marks + 1)] == '!')
         {
@@ -90,25 +88,27 @@ public sealed class TaskParser
         {
             return;
         }
-        words[^1] = last[..^marks];
-        priority = Max(priority, marks == 1 ? Priority.High : Priority.Urgent);
+        state.Words[^1] = last[..^marks];
+        state.Priority = Max(state.Priority, marks == 1 ? Priority.High : Priority.Urgent);
     }
 
-    private void ReadDateMark(string mark, ref DateOnly? due, ref TimeOnly? time, ref bool dateCleared)
+    private void ReadDateMark(string mark, ParseState state)
     {
         string lower = mark.ToLowerInvariant();
         if (lower == "none")
         {
-            dateCleared = true;  // wins over every other date mark on the line, in any order
+            state.DateCleared = true;  // wins over every other date mark on the line, in any order
             return;
         }
         if (TimeOnly.TryParseExact(mark, ["H:mm", "HH:mm"], CultureInfo.InvariantCulture, DateTimeStyles.None, out TimeOnly parsedTime))
         {
-            time = parsedTime;
+            state.Time = parsedTime;
             return;
         }
-        due = ReadDay(lower) ?? throw new TaskParseException($"Unknown date mark @{mark}. Use @today, @tomorrow, a weekday like @fri, @2026-11-03, @+3d, @15:30 or @none.");
+        state.Due = ReadDay(lower) ?? throw new TaskParseException($"Unknown date mark @{mark}. Use @today, @tomorrow, a weekday like @fri, @2026-11-03, @+3d, @15:30 or @none.");
     }
+
+    private static Priority Max(Priority a, Priority b) => a > b ? a : b;
 
     private DateOnly? ReadDay(string lower)
     {
@@ -147,5 +147,21 @@ public sealed class TaskParser
             }
         }
         return null;
+    }
+
+    /// <summary>What has been read so far.</summary>
+    private sealed class ParseState
+    {
+        public List<string> Words { get; } = [];
+
+        public List<string> Tags { get; } = [];
+
+        public Priority Priority { get; set; }
+
+        public DateOnly? Due { get; set; }
+
+        public TimeOnly? Time { get; set; }
+
+        public bool DateCleared { get; set; }
     }
 }
