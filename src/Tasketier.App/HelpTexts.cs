@@ -27,7 +27,7 @@ public static class HelpTexts
         Enter in the top box     add the task
         Space / checkbox         complete or reopen the selected task
         Star                     plan for today without a date (carries over)
-        F2 / double-click        edit the whole line; Enter saves, Esc cancels
+        Pencil / F2 / double-click   edit: the row becomes one line of marks; Enter saves, Esc cancels
         Del                      delete; Ctrl+Z brings it back
         Ctrl+Z                   undo the last change (20 kept per session)
         Ctrl+F                   the filter; Esc clears it

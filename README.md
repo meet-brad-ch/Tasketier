@@ -33,7 +33,7 @@ parser read from it, before you press Enter:
 The list window, Today view. Overdue tasks come first, in red. Then the tasks due today. Then the
 task planned for today, with the star:
 
-![The list window with the Today view: four tasks, one overdue, one with a time, a priority mark and an alarm, one starred](docs/img/list.png)
+![The list window with the Today view: four tasks, one overdue, one with a time, a priority mark and an alarm, one starred, a pencil at the end of each row](docs/img/list.png)
 
 An alarm card. It beeps until you answer it. Done completes the task, the three middle buttons
 snooze, Disarm acknowledges, and `Esc` snoozes one minute:
@@ -90,7 +90,7 @@ artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 | Open the list | `Ctrl+Alt+L`, or a left click on the tray icon |
 | Complete | The checkbox, or `Space` on the selected row |
 | Plan for today without a date | The star (`☆` becomes `★`). The task stays in Today until it is done or unstarred. |
-| Edit | Double-click the title, or `F2`. You edit the whole line in inline syntax. `Enter` saves. |
+| Edit | The pencil at the end of the row, `F2`, or a double-click on the title. The row becomes one edit field with the whole line in inline syntax. `Enter` saves, `Esc` cancels. |
 | Delete | `Del`. `Ctrl+Z` brings the task back. |
 | Undo | `Ctrl+Z`. The app keeps the last 20 changes of the session, captures included. |
 | Filter | Type in the filter box (`Ctrl+F`). The filter matches the title or a `#tag`. |

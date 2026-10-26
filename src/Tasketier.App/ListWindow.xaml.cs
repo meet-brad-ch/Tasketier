@@ -204,6 +204,15 @@ public partial class ListWindow : Window
         });
     }
 
+    private void OnEditClick(object sender, RoutedEventArgs e)
+    {
+        if (RowOf(sender) is TaskRow row)
+        {
+            Tasks.SelectedItem = row;
+            BeginEdit(row);
+        }
+    }
+
     private void OnTitleMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2 && RowOf(sender) is TaskRow row)
@@ -281,11 +290,15 @@ public partial class ListWindow : Window
     {
         row.EditText = row.Syntax;
         row.IsEditing = true;
-        if (Tasks.ItemContainerGenerator.ContainerFromItem(row) is ListViewItem item && FindEditBox(item) is TextBox box)
+        // The box becomes visible on the next layout pass; focus it after that, or the focus call is lost.
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, () =>
         {
-            box.Focus();
-            box.SelectAll();
-        }
+            if (Tasks.ItemContainerGenerator.ContainerFromItem(row) is ListViewItem item && FindEditBox(item) is TextBox box)
+            {
+                box.Focus();
+                box.SelectAll();
+            }
+        });
     }
 
     private void CommitEdit(TaskRow row)
