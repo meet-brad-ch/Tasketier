@@ -32,9 +32,9 @@ public sealed class TaskTools
     /// <param name="view">today, upcoming, inbox or done.</param>
     /// <param name="filter">Text the title or a tag must contain, or empty.</param>
     /// <returns>The tasks as a JSON array.</returns>
-    [McpServerTool(Name = "list_tasks"), Description("List the tasks of one view, in the view's order. The views: 'today' = overdue first, then due today, then planned for today. 'upcoming' = due after today. 'inbox' = no date and not planned. 'done' = completed in the last 30 days. Returns a JSON array of tasks.")]
+    [McpServerTool(Name = "list_tasks"), Description("List the tasks of one view, in the view's order. The views: 'today' = overdue first, then due today, then planned for today. 'upcoming' = due after today. 'inbox' = no date and not planned. 'done' = completed in the last 30 days. 'all' = every open task, overdue first, then by due day, undated last. Returns a JSON array of tasks.")]
     public string ListTasks(
-        [Description("One of: today, upcoming, inbox, done. Default today.")] string view = "today",
+        [Description("One of: today, upcoming, inbox, done, all. Default today.")] string view = "today",
         [Description("Only tasks whose title or tag contains this text (case-insensitive). Empty for all.")] string filter = "") =>
         Json(() => _service.List(ParseView(view), filter ?? string.Empty));
 
@@ -89,7 +89,8 @@ public sealed class TaskTools
         "UPCOMING" => TaskView.Upcoming,
         "INBOX" => TaskView.Inbox,
         "DONE" => TaskView.Done,
-        _ => throw new ArgumentException($"Unknown view '{view}'; use today, upcoming, inbox or done.", nameof(view)),
+        "ALL" => TaskView.All,
+        _ => throw new ArgumentException($"Unknown view '{view}'. Use today, upcoming, inbox, done or all.", nameof(view)),
     };
 
     /// <summary>Runs an operation; a known failure becomes an <see cref="McpException"/>, whose message reaches the client.</summary>

@@ -80,10 +80,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <ListBox x:Name="Views" Grid.Column="0" Margin="0,0,10,0" SelectionChanged="OnViewChanged" FontSize="14">
-                <ListBoxItem Content="Today" Padding="10,8" />
-                <ListBoxItem Content="Upcoming" Padding="10,8" />
-                <ListBoxItem Content="Inbox" Padding="10,8" />
-                <ListBoxItem Content="Done" Padding="10,8" />
+                <ListBoxItem Content="Today" Tag="Today" Padding="10,8" />
+                <ListBoxItem Content="Upcoming" Tag="Upcoming" Padding="10,8" />
+                <ListBoxItem Content="Inbox" Tag="Inbox" Padding="10,8" />
+                <ListBoxItem Content="All" Tag="All" Padding="10,8" />
+                <ListBoxItem Content="Done" Tag="Done" Padding="10,8" />
             </ListBox>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>

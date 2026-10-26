@@ -14,4 +14,7 @@ public enum TaskView
 
     /// <summary>Tasks completed in the last thirty days.</summary>
     Done = 3,
+
+    /// <summary>Every open task: overdue first, then by due day, undated last.</summary>
+    All = 4,
 }

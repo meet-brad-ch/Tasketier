@@ -43,6 +43,7 @@ public sealed class McpRoundTripTests : IAsyncLifetime, IDisposable
         string[] names = [.. tools.Select(t => t.Name).Order()];
         Assert.Equal(["add_task", "complete_task", "delete_task", "get_task", "list_tasks", "plan_today", "reopen_task", "search_tasks", "update_task"], names);
         Assert.Contains("@tomorrow", tools.Single(t => t.Name == "add_task").Description, StringComparison.Ordinal);
+        Assert.Contains("'all'", tools.Single(t => t.Name == "list_tasks").Description, StringComparison.Ordinal);
     }
 
     [Fact]

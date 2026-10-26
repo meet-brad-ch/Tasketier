@@ -11,7 +11,7 @@ public sealed class CommandRunner
         tasketier - local task capture and planning
 
         tasketier add <text>                 add a task. The text uses the inline syntax (see below).
-        tasketier list [--view today|upcoming|inbox|done] [--filter <text>]
+        tasketier list [--view today|upcoming|inbox|done|all] [--filter <text>]
         tasketier show <id>
         tasketier done <id>                  complete
         tasketier undone <id>                reopen
@@ -158,7 +158,8 @@ public sealed class CommandRunner
         "UPCOMING" => TaskView.Upcoming,
         "INBOX" => TaskView.Inbox,
         "DONE" => TaskView.Done,
-        _ => throw new UsageException($"Unknown view '{name}'; use today, upcoming, inbox or done."),
+        "ALL" => TaskView.All,
+        _ => throw new UsageException($"Unknown view '{name}'. Use today, upcoming, inbox, done or all."),
     };
 
     private void Print(TaskItem task, bool json, string prefix)

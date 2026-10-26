@@ -33,8 +33,8 @@ public partial class ListWindow : Window
         Icon = System.Windows.Media.Imaging.BitmapFrame.Create(new Uri("pack://application:,,,/Tasketier.ico"));
     }
 
-    /// <summary>The view the window shows.</summary>
-    public TaskView View => (TaskView)Math.Max(0, Views.SelectedIndex);
+    /// <summary>The view the window shows, named by the selected rail item's Tag.</summary>
+    public TaskView View => Views.SelectedItem is ListBoxItem { Tag: string name } ? Enum.Parse<TaskView>(name) : TaskView.Today;
 
     /// <summary>Points the window at another service (after the data folder changed) and refreshes.</summary>
     /// <param name="service">The new service.</param>

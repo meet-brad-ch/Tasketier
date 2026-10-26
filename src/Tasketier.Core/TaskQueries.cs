@@ -33,6 +33,7 @@ public sealed class TaskQueries
             TaskView.Upcoming => Sort(tasks.Where(t => !t.IsDone && t.Due > _today)),
             TaskView.Inbox => Sort(tasks.Where(t => !t.IsDone && t.Due is null && t.PlannedFor is null)),
             TaskView.Done => [.. tasks.Where(t => t.Completed is not null && _now - t.Completed.Value <= DoneWindow).OrderByDescending(t => t.Completed)],
+            TaskView.All => Sort(tasks.Where(t => !t.IsDone)),
             _ => throw new ArgumentOutOfRangeException(nameof(view), view, "Unknown view."),
         };
     }
