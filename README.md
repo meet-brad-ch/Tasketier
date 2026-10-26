@@ -152,11 +152,6 @@ replaces a damaged file. There is no network access and no telemetry.
   from a seeded data folder (see its header).
 - `docs/img/` — the README screenshots.
 
-## Not in 0.1
-
-Due-time toasts, recurring tasks and notes per task are candidates for 0.2. Projects, subtasks,
-sync, mobile, calendar, attachments, time tracking and export are out.
-
 ## Design
 
 - WPF on .NET 10. One framework-dependent exe for the app, one for the CLI. The installer
