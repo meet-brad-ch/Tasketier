@@ -1,0 +1,79 @@
+name: build
+
+# Runs every quality gate, builds the installer, keeps it as an artifact on every run, and makes a
+# GitHub Release with it when a tag v1.2.3 is pushed.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Version
+        id: version
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -match '^v(\d+)\.(\d+)\.(\d+)$') {
+            $v = "$($Matches[1]).$($Matches[2]).$($Matches[3])"
+            $n = "$v.0"
+          } else {
+            $v = "0.0.0-ci.$env:GITHUB_RUN_NUMBER"
+            $n = "0.0.0.$env:GITHUB_RUN_NUMBER"
+          }
+          "version=$v" >> $env:GITHUB_OUTPUT
+          "number=$n" >> $env:GITHUB_OUTPUT
+
+      - name: Install lizard
+        shell: pwsh
+        run: |
+          pip install lizard==1.17.31
+          lizard --version
+
+      # Build, tests with coverage, formatting, complexity: the same gates as on the desk.
+      - name: Verify
+        shell: pwsh
+        run: .\scripts\verify.ps1
+
+      - name: Inno Setup
+        shell: pwsh
+        run: |
+          $known = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Get-Command iscc -ErrorAction SilentlyContinue) -and -not (Test-Path $known)) {
+            choco install innosetup -y --no-progress | Out-Host
+          }
+
+      - name: Installer
+        shell: pwsh
+        run: .\build-installer.ps1 -Version ${{ steps.version.outputs.version }} -NumVersion ${{ steps.version.outputs.number }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tasketier-Setup-${{ steps.version.outputs.version }}
+          path: out/installer/Tasketier-Setup-${{ steps.version.outputs.version }}.exe
+          if-no-files-found: error
+
+      - name: Release
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $setup = "out/installer/Tasketier-Setup-${{ steps.version.outputs.version }}.exe"
+          $hash = (Get-FileHash -Algorithm SHA256 $setup).Hash.ToLowerInvariant()
+          gh release create $env:GITHUB_REF_NAME $setup `
+            --title "Tasketier ${{ steps.version.outputs.version }}" `
+            --notes "The installer of Tasketier ${{ steps.version.outputs.version }}. It installs the .NET Desktop Runtime 10.0 when the PC has none (downloaded from Microsoft, SHA-256 checked). SHA-256 of the installer: $hash"

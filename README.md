@@ -1,5 +1,9 @@
 # Tasketier
 
+[![build](https://github.com/meet-brad-ch/Tasketier/actions/workflows/build.yml/badge.svg)](https://github.com/meet-brad-ch/Tasketier/actions/workflows/build.yml)
+[![release](https://img.shields.io/github/v/release/meet-brad-ch/Tasketier?label=release)](https://github.com/meet-brad-ch/Tasketier/releases/latest)
+[![license](https://img.shields.io/github/license/meet-brad-ch/Tasketier)](LICENSE)
+
 **What:** A task tool for Windows that keeps all data on the PC. A global hotkey opens a one-line
 box. You type the task with inline marks (`@tomorrow`, `@15:30`, `!`, `#tag`) and press Enter. A
 list window shows Today, Upcoming, Inbox and Done. A tray icon keeps the app running.
@@ -67,6 +71,10 @@ clears the machine-level feeds, so the build is the same on every machine.
    checks the SHA-256 of the download.
 
 Tasks and settings live in `%LOCALAPPDATA%\Tasketier`. An uninstall keeps them.
+
+The Releases page has the installer of each version. CI (`.github/workflows/build.yml`) runs
+`scriptserify.ps1` and `build-installer.ps1` on every push and keeps the installer as an
+artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 
 ## Use
 
