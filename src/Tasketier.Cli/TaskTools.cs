@@ -1,0 +1,107 @@
+using System.ComponentModel;
+using System.Text.Json;
+using ModelContextProtocol;
+using ModelContextProtocol.Server;
+using Tasketier.Core;
+
+namespace Tasketier.Cli;
+
+/// <summary>The MCP tools. Every tool returns the affected task record(s) as JSON.</summary>
+[McpServerToolType]
+public sealed class TaskTools
+{
+    private const string SyntaxHelp = "Inline syntax: words are the title; #tag adds a tag; ! means high and !! urgent priority; " +
+        "@today, @tomorrow, a weekday like @fri, @2026-11-03 or @+3d set the due day; @15:30 sets the due time (today when no day is given); @none clears the date.";
+
+    private readonly TaskService _service;
+
+    /// <summary>Creates the tools over a service.</summary>
+    /// <param name="service">The service.</param>
+    public TaskTools(TaskService service)
+    {
+        _service = service ?? throw new ArgumentNullException(nameof(service));
+    }
+
+    /// <summary>Adds a task.</summary>
+    /// <param name="text">The task line in inline syntax.</param>
+    /// <returns>The stored task as JSON.</returns>
+    [McpServerTool(Name = "add_task"), Description("Add a task from one line of text. " + SyntaxHelp + " Returns the stored task with its id.")]
+    public string AddTask([Description("The task text, for example 'Call the dentist @fri @15:30 ! #health'.")] string text) => Json(() => _service.Add(text));
+
+    /// <summary>Lists a view.</summary>
+    /// <param name="view">today, upcoming, inbox or done.</param>
+    /// <param name="filter">Text the title or a tag must contain, or empty.</param>
+    /// <returns>The tasks as a JSON array.</returns>
+    [McpServerTool(Name = "list_tasks"), Description("List the tasks of a view in the view's order: 'today' (overdue first, then due today, then planned for today), 'upcoming' (due after today), 'inbox' (no date, not planned) or 'done' (completed in the last 30 days). Returns a JSON array of tasks.")]
+    public string ListTasks(
+        [Description("One of: today, upcoming, inbox, done. Default today.")] string view = "today",
+        [Description("Only tasks whose title or tag contains this text (case-insensitive). Empty for all.")] string filter = "") =>
+        Json(() => _service.List(ParseView(view), filter ?? string.Empty));
+
+    /// <summary>Completes a task.</summary>
+    /// <param name="id">The task id.</param>
+    /// <returns>The task as JSON.</returns>
+    [McpServerTool(Name = "complete_task"), Description("Mark a task done. Returns the task.")]
+    public string CompleteTask([Description("The task id from list_tasks or add_task.")] int id) => Json(() => _service.Complete(id));
+
+    /// <summary>Reopens a task.</summary>
+    /// <param name="id">The task id.</param>
+    /// <returns>The task as JSON.</returns>
+    [McpServerTool(Name = "reopen_task"), Description("Reopen a completed task. Returns the task.")]
+    public string ReopenTask([Description("The task id.")] int id) => Json(() => _service.Uncomplete(id));
+
+    /// <summary>Replaces a task's text.</summary>
+    /// <param name="id">The task id.</param>
+    /// <param name="text">The whole new line in inline syntax.</param>
+    /// <returns>The task as JSON.</returns>
+    [McpServerTool(Name = "update_task"), Description("Replace a task's title, tags, priority and due date from one line of text; parts left out of the text are cleared. " + SyntaxHelp + " Returns the task.")]
+    public string UpdateTask([Description("The task id.")] int id, [Description("The whole new task line, for example 'Call the dentist @mon ! #health'.")] string text) => Json(() => _service.Edit(id, text));
+
+    /// <summary>Deletes a task.</summary>
+    /// <param name="id">The task id.</param>
+    /// <returns>The removed task as JSON.</returns>
+    [McpServerTool(Name = "delete_task"), Description("Delete a task for good. Returns the removed task.")]
+    public string DeleteTask([Description("The task id.")] int id) => Json(() => _service.Delete(id));
+
+    /// <summary>Plans or unplans a task for today.</summary>
+    /// <param name="id">The task id.</param>
+    /// <param name="planned">True to plan, false to unplan.</param>
+    /// <returns>The task as JSON.</returns>
+    [McpServerTool(Name = "plan_today"), Description("Pull a task into the Today view without giving it a due date (planned = true), or take it out again (planned = false). Returns the task.")]
+    public string PlanToday([Description("The task id.")] int id, [Description("True to plan the task for today, false to unplan it. Default true.")] bool planned = true) =>
+        Json(() => planned ? _service.Plan(id) : _service.Unplan(id));
+
+    /// <summary>Searches every task.</summary>
+    /// <param name="text">The text to look for.</param>
+    /// <returns>The tasks as a JSON array, open first.</returns>
+    [McpServerTool(Name = "search_tasks"), Description("Find every task, open or done, whose title or tag contains the text (case-insensitive). Open tasks come first. Returns a JSON array of tasks.")]
+    public string SearchTasks([Description("The text to look for.")] string text) => Json(() => _service.Search(text));
+
+    /// <summary>Shows one task.</summary>
+    /// <param name="id">The task id.</param>
+    /// <returns>The task as JSON.</returns>
+    [McpServerTool(Name = "get_task"), Description("Get one task by id. Returns the task.")]
+    public string GetTask([Description("The task id.")] int id) => Json(() => _service.Get(id));
+
+    private static TaskView ParseView(string view) => (view ?? "today").ToUpperInvariant() switch
+    {
+        "TODAY" => TaskView.Today,
+        "UPCOMING" => TaskView.Upcoming,
+        "INBOX" => TaskView.Inbox,
+        "DONE" => TaskView.Done,
+        _ => throw new ArgumentException($"Unknown view '{view}'; use today, upcoming, inbox or done.", nameof(view)),
+    };
+
+    /// <summary>Runs an operation; a known failure becomes an <see cref="McpException"/>, whose message reaches the client.</summary>
+    private static string Json<T>(Func<T> operation)
+    {
+        try
+        {
+            return JsonSerializer.Serialize(operation(), TaskJson.Options);
+        }
+        catch (Exception error) when (error is TaskParseException or TaskNotFoundException or TaskStoreDamagedException or ArgumentException or TimeoutException)
+        {
+            throw new McpException(error.Message, error);
+        }
+    }
+}

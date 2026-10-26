@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Tasketier.Cli</RootNamespace>
+    <AssemblyName>tasketier</AssemblyName>
+    <!-- Every public type and member must carry an XML doc comment; CS1591 fails the build. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
+    <PackageReference Include="ModelContextProtocol" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tasketier.Core\Tasketier.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Arguments.cs" />
+    <Compile Include="CommandRunner.cs" />
+    <Compile Include="DataLocation.cs" />
+    <Compile Include="ExitCode.cs" />
+    <Compile Include="McpServerHost.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="TaskTable.cs" />
+    <Compile Include="TaskTools.cs" />
+    <Compile Include="UsageException.cs" />
+  </ItemGroup>
+
+</Project>
