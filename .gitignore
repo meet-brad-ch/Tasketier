@@ -1,0 +1,19 @@
+# sw-project: the session log is a local working document, never committed
+LOG.md
+
+# .NET build output
+bin/
+obj/
+TestResults/
+*.binlog
+
+# IDE / editor
+.vs/
+.idea/
+*.user
+*.suo
+.vscode/
+
+# OS junk
+Thumbs.db
+Desktop.ini
