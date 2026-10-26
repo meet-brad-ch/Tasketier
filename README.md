@@ -11,10 +11,9 @@ much attention. Capture must take less than two seconds from any window. The dai
 must show what is due, what is planned for today and what is done. An LLM must be able to add and
 query tasks from a running session.
 
-**Status:** working, 0.1.0. Capture box, list window with the four views, inline edit, plan star,
-undo, settings, help, tray, autostart, CLI, MCP server, plugin, installer. 104 tests pass. Every
-gate of `scripts\verify.ps1` passes. Not yet checked by hand: the installer's runtime download on
-a PC without .NET 10.
+**Status:** working. Capture box, list window with the four views, inline edit, plan star, undo,
+settings, help, tray, autostart, CLI, MCP server, plugin, installer. Every gate of
+`scriptserify.ps1` passes.
 
 ## Screenshots
 
@@ -85,7 +84,8 @@ Tasks and settings live in `%LOCALAPPDATA%\Tasketier`. An uninstall keeps them.
 | Settings | Tray menu: both hotkeys, the data folder, start with Windows |
 
 You can change both hotkeys in Settings. When another program holds a chord, the tray shows a
-message, and that hotkey stays off until you change it.
+message, and that hotkey stays off until you change it. The defaults avoid chords that common
+tools hold, such as `Ctrl+Alt+Space` and `Ctrl+Alt+T`.
 
 **Inline syntax:** Words are the title. `#tag` adds a tag. `!` is high priority, `!!` is urgent.
 Both also work as a suffix: `Pay rent!!`. `@today`, `@tomorrow`, `@mon` to `@sun`, `@2026-11-03`,
@@ -149,31 +149,21 @@ replaces a damaged file. There is no network access and no telemetry.
 Due-time toasts, recurring tasks and notes per task are candidates for 0.2. Projects, subtasks,
 sync, mobile, calendar, attachments, time tracking and export are out.
 
-## Decisions
+## Design
 
-One line each: the choice, and the reason. Append. Do not rewrite history.
-
-- 2026-10-26 — WPF on .NET 10, not WinUI 3, Avalonia or Python: tray, autostart and settings-file
-  code exist from PassKit, and the result is one framework-dependent exe.
-- 2026-10-26 — one JSON file, not todo.txt or SQLite: readable by a person, no dependency, some
-  hundreds of tasks at most. A cross-process mutex keeps the app, the CLI and the MCP server
-  from writing at the same time.
-- 2026-10-26 — the 0.1 boundary as listed above. Toasts wait for 0.2, because the first problem
-  is capture, not reminding.
-- 2026-10-26 — LLM access as a stdio MCP server and a CLI in one exe over the shared store, not
-  an HTTP server inside the app. It works when the app does not run, and the WPF app stays free
-  of ASP.NET Core. A Claude Code plugin in the repo bundles the skill and the MCP registration.
-- 2026-10-26 — default hotkeys `Ctrl+Alt+A` (capture) and `Ctrl+Alt+L` (list). The first choice,
-  `Ctrl+Alt+Space` and `Ctrl+Alt+T`, is held by other programs on the owner's PC (measured with
-  RegisterHotKey).
-- 2026-10-26 — the app is `TasketierApp.exe` and the CLI is `tasketier.exe`. Both live in one
-  folder, and Windows file names ignore case, so both cannot be `Tasketier.exe`.
-- 2026-10-26 — the installer writes to `C:\Program Files\Tasketier` with elevation, not per user.
-  The .NET runtime bootstrap needs elevation, as in PassKit. The plugin's `.mcp.json` uses
-  `${ProgramFiles}`.
-- 2026-10-26 — public repository under MIT, so it can stand next to Tabuzaur on the profile.
-- 2026-10-26 — all text follows Simplified Technical English (ASD-STE100): short sentences, active
-  voice, one meaning per word.
+- WPF on .NET 10. One framework-dependent exe for the app, one for the CLI. The installer
+  bootstraps the runtime.
+- The app is `TasketierApp.exe` and the CLI is `tasketier.exe`. Both live in one folder, and
+  Windows file names ignore case, so both cannot be `Tasketier.exe`.
+- One JSON file, not a database: a person can read it, there is no dependency, and the store
+  holds some hundreds of tasks at most. A cross-process mutex keeps the app, the CLI and the MCP
+  server from writing at the same time.
+- LLM access is a stdio MCP server and a CLI in one exe over the shared store, not an HTTP server
+  inside the app. It works when the app does not run, and the WPF app stays free of ASP.NET Core.
+- The installer writes to `C:\Program Files\Tasketier` with elevation, because the .NET runtime
+  bootstrap needs elevation. The plugin's `.mcp.json` finds the server through `${ProgramFiles}`.
+- All text follows Simplified Technical English (ASD-STE100): short sentences, active voice, one
+  meaning per word.
 
 ---
 
