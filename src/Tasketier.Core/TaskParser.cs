@@ -4,7 +4,7 @@ namespace Tasketier.Core;
 
 /// <summary>
 /// Reads one line of inline syntax: words are the title, <c>#tag</c> is a tag, <c>!</c>/<c>!!</c> is the
-/// priority, <c>@today</c> <c>@tomorrow</c> <c>@fri</c> <c>@2026-11-03</c> <c>@+3d</c> set the due day,
+/// priority, <c>@today</c> <c>@tomorrow</c> <c>@fri</c> (the next Friday after today) <c>@2026-11-03</c> <c>@+3d</c> set the due day,
 /// <c>@15:30</c> the due time (today when no day is given), <c>@none</c> clears the date.
 /// </summary>
 public sealed class TaskParser
@@ -142,7 +142,7 @@ public sealed class TaskParser
             string name = DayNames[i];
             if (lower == name || (lower.Length == 3 && name.StartsWith(lower, StringComparison.Ordinal)))
             {
-                int ahead = (i - (int)_today.DayOfWeek + 7) % 7;
+                int ahead = (i - (int)_today.DayOfWeek + 6) % 7 + 1;  // 1..7: the next such day, never today
                 return _today.AddDays(ahead);
             }
         }

@@ -71,7 +71,7 @@
             <Button DockPanel.Dock="Right" Content="?" Width="36" Margin="8,0,0,0" Click="OnHelpClick" ToolTip="The marks you can type and the keys (F1)" />
             <Grid>
                 <TextBox x:Name="AddBox" FontSize="15" Padding="8,6" PreviewKeyDown="OnAddKeyDown" TextChanged="OnAddTextChanged" />
-                <TextBlock x:Name="AddHint" Text="Add a task… (Enter saves; @tomorrow @fri @15:30 ! !! #tag)" Margin="12,0,0,0" VerticalAlignment="Center" Opacity="0.45" IsHitTestVisible="False" />
+                <TextBlock x:Name="AddHint" Text="Add a task… (Enter saves; @today @tomorrow @mon…@sun @15:30 ! !! #tag; ? for all marks)" Margin="12,0,0,0" VerticalAlignment="Center" Opacity="0.45" IsHitTestVisible="False" />
             </Grid>
         </DockPanel>
         <Grid Grid.Row="1">

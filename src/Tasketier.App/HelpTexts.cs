@@ -10,7 +10,7 @@ public static class HelpTexts
         #tag            a tag (lower case, several allowed)
         !  or  !!       high or urgent priority; also as a suffix: Pay rent!!
         @today  @tomorrow        the due day
-        @mon … @sun              the next such day (today counts)
+        @mon … @sun              the next such day after today
         @2026-11-03  @+3d  @+2w  a date, in 3 days, in 2 weeks
         @15:30          the due time; today when no day is given
         @none           no date (wins over other date marks)

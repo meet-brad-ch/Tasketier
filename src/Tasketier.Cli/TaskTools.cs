@@ -11,7 +11,7 @@ namespace Tasketier.Cli;
 public sealed class TaskTools
 {
     private const string SyntaxHelp = "Inline syntax: words are the title. #tag adds a tag. ! means high priority, !! means urgent. " +
-        "@today, @tomorrow, a weekday like @fri, @2026-11-03 or @+3d set the due day. @15:30 sets the due time, today when no day is given. @none removes the date.";
+        "@today, @tomorrow, a weekday like @fri (the next Friday after today), @2026-11-03 or @+3d set the due day. @15:30 sets the due time, today when no day is given. @none removes the date.";
 
     private readonly TaskService _service;
 

@@ -97,7 +97,7 @@ tools hold, such as `Ctrl+Alt+Space` and `Ctrl+Alt+T`.
 
 **Inline syntax:** Words are the title. `#tag` adds a tag. `!` is high priority, `!!` is urgent.
 Both also work as a suffix: `Pay rent!!`. `@today`, `@tomorrow`, `@mon` to `@sun`, `@2026-11-03`,
-`@+3d` and `@+2w` set the due day. A weekday means the next such day, and today counts. `@15:30`
+`@+3d` and `@+2w` set the due day. A weekday means the next such day after today. `@15:30`
 sets the time. Without a day, the time means today. `@none` removes the date. An unknown `@` mark
 is an error. The box shows it before you press Enter.
 

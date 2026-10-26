@@ -36,7 +36,7 @@ Words are the title. Marks can stand anywhere in the line:
 - `#tag` - a tag (lower case, several allowed)
 - `!` high priority, `!!` urgent. Also as a suffix: `Pay rent!!`
 - `@today`, `@tomorrow`, `@mon` to `@sun`, `@2026-11-03`, `@+3d`, `@+2w` - the due day. A weekday
-  means the next such day, and today counts.
+  means the next such day after today. On a Monday, `@mon` is the Monday in one week.
 - `@15:30` - the due time. Without a day, it means today.
 - `@none` - no date. It wins over every other date mark on the line.
 

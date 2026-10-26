@@ -55,8 +55,8 @@ public sealed class TaskParserTests
     [InlineData("@tod", 0)]
     [InlineData("@tomorrow", 1)]
     [InlineData("@tom", 1)]
-    [InlineData("@mon", 0)]
-    [InlineData("@monday", 0)]
+    [InlineData("@mon", 7)]
+    [InlineData("@monday", 7)]
     [InlineData("@tue", 1)]
     [InlineData("@fri", 4)]
     [InlineData("@Friday", 4)]
@@ -64,7 +64,7 @@ public sealed class TaskParserTests
     [InlineData("@+3d", 3)]
     [InlineData("@+2w", 14)]
     [InlineData("@2026-11-03", 8)]
-    public void Day_marks_resolve_against_today(string mark, int daysAhead)
+    public void Day_marks_resolve_against_today_and_a_weekday_is_never_today(string mark, int daysAhead)
     {
         ParsedTask parsed = _parser.Parse("Dentist " + mark);
 
