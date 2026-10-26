@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Tasketier.Core</RootNamespace>
+    <!-- Every public type and member must carry an XML doc comment; CS1591 fails the build. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="AppPaths.cs" />
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="HotkeyChord.cs" />
+    <Compile Include="HotkeyModifiers.cs" />
+    <Compile Include="ParsedTask.cs" />
+    <Compile Include="Priority.cs" />
+    <Compile Include="SettingsDamagedException.cs" />
+    <Compile Include="SettingsStore.cs" />
+    <Compile Include="TaskDocument.cs" />
+    <Compile Include="TaskFileWatcher.cs" />
+    <Compile Include="TaskItem.cs" />
+    <Compile Include="TaskJson.cs" />
+    <Compile Include="TaskNotFoundException.cs" />
+    <Compile Include="TaskParseException.cs" />
+    <Compile Include="TaskParser.cs" />
+    <Compile Include="TaskQueries.cs" />
+    <Compile Include="TaskService.cs" />
+    <Compile Include="TaskStore.cs" />
+    <Compile Include="TaskStoreDamagedException.cs" />
+    <Compile Include="TaskSyntax.cs" />
+    <Compile Include="TaskView.cs" />
+    <Compile Include="UndoEntry.cs" />
+    <Compile Include="UndoHistory.cs" />
+  </ItemGroup>
+
+</Project>

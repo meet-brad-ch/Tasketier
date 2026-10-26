@@ -1,0 +1,20 @@
+<Project>
+  <!-- One version for every project; the installer build script reads it too. -->
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Authors>Brad Chamberlain</Authors>
+    <Product>Tasketier</Product>
+    <Copyright>Brad Chamberlain</Copyright>
+  </PropertyGroup>
+
+  <!-- Engineering contract: nullable, analyzers and code style run in the build, warnings fail it. -->
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- Every source file is listed by name in its project file. -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+</Project>

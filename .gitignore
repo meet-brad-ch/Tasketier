@@ -17,3 +17,6 @@ TestResults/
 # OS junk
 Thumbs.db
 Desktop.ini
+
+# Publish output and the installer
+out/

@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Tasketier.Core/Tasketier.Core.csproj" />
+    <Project Path="src/Tasketier.App/Tasketier.App.csproj" />
+    <Project Path="src/Tasketier.Cli/Tasketier.Cli.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Tasketier.Core.Tests/Tasketier.Core.Tests.csproj" />
+    <Project Path="tests/Tasketier.Cli.Tests/Tasketier.Cli.Tests.csproj" />
+  </Folder>
+</Solution>

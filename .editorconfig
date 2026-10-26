@@ -1,0 +1,21 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{xml,csproj,props,slnx,config,json,yml,yaml}]
+indent_size = 2
+
+[*.ps1]
+end_of_line = crlf
+
+# Tests name their methods as sentences: Encode_matches_the_rfc_vectors.
+[tests/**.cs]
+dotnet_diagnostic.CA1707.severity = none
+# Tests pass constant arrays to constructors under test; a static field would say nothing more.
+dotnet_diagnostic.CA1861.severity = none
