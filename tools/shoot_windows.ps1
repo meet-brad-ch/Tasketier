@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Takes the README screenshots: the capture box with a typed line, the list window, the help panel.
+Takes the README screenshots: the capture box with a typed line, the help panel, the list window, the alarm card.
 
 .DESCRIPTION
 Starts the built app (Debug by default, -Exe for another), opens each window, and saves a PNG of just that
@@ -10,8 +10,9 @@ as -Data: the app then runs beside the installed one. Stop that instance afterwa
 #>
 param(
     [string]$Exe = (Join-Path $PSScriptRoot '..\src\Tasketier.App\bin\Debug\net10.0-windows\TasketierApp.exe'),
-    [string]$OutDir = (Join-Path $PSScriptRoot '..\docs\img'),
-    [string]$Data = ''
+    [string]$OutDir = (Join-Path $PSScriptRoot '../docs/img'),
+    [string]$Data = '',
+    [string]$Cli = (Join-Path $PSScriptRoot '../src/Tasketier.Cli/bin/Debug/net10.0/tasketier.exe')
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
@@ -61,7 +62,27 @@ Save-Window 'capture-help'
 [System.Windows.Forms.SendKeys]::SendWait('{ESC}')
 Start-Sleep -Milliseconds 600
 
+# A task whose alarm is already due: the running instance picks it up at its next half-minute poll.
+if ($Data) {
+    $due = (Get-Date).AddMinutes(1).ToString('HH:mm')
+    & $Cli add "Team standup @today @$due @alarm5" --data $Data | Out-Null
+}
+
 Start-Process -FilePath $Exe -ArgumentList (@('--list') + $dataArgs)
 Start-Sleep -Milliseconds 1500
 Expect-Foreground 'Tasketier'
 Save-Window 'list'
+
+if ($Data) {
+    $seen = $false
+    for ($i = 0; $i -lt 16; $i++) {
+        Start-Sleep -Seconds 3
+        if ([Win]::Title() -eq 'Tasketier alarm') { $seen = $true; break }
+    }
+    if (-not $seen) { throw 'ABORT: no alarm card came to the front within 48 s' }
+    Start-Sleep -Milliseconds 800
+    Save-Window 'alarm'
+    $instance = Get-CimInstance Win32_Process -Filter "Name = 'TasketierApp.exe'" | Where-Object { $_.CommandLine -like "*$Data*" }
+    foreach ($proc in $instance) { Stop-Process -Id $proc.ProcessId -Force }
+    Write-Host 'the test instance is stopped'
+}

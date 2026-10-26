@@ -33,7 +33,12 @@ parser read from it, before you press Enter:
 The list window, Today view. Overdue tasks come first, in red. Then the tasks due today. Then the
 task planned for today, with the star:
 
-![The list window with the Today view: four tasks, one overdue, one with a time and a priority mark, one starred](docs/img/list.png)
+![The list window with the Today view: four tasks, one overdue, one with a time, a priority mark and an alarm, one starred](docs/img/list.png)
+
+An alarm card. It beeps until you answer it. Done completes the task, the three middle buttons
+snooze, Disarm acknowledges, and `Esc` snoozes one minute:
+
+![The alarm card: the task title, its due time, and the buttons Done, 5 min, 15 min, 1 h, Disarm](docs/img/alarm.png)
 
 ## How to run
 

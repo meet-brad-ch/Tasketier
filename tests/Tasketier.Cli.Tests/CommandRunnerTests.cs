@@ -136,7 +136,7 @@ public sealed class CommandRunnerTests : IDisposable
         Assert.Equal(ExitCode.Ok, await _runner.RunAsync(["help"]));
         Assert.Contains("Inline syntax", _out.ToString(), StringComparison.Ordinal);
         Assert.Equal(ExitCode.Ok, await _runner.RunAsync(["version"]));
-        Assert.Contains("0.2.0", _out.ToString(), StringComparison.Ordinal);
+        Assert.Contains("0.2.1", _out.ToString(), StringComparison.Ordinal);
     }
 
     [Fact]

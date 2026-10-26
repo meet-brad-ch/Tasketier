@@ -73,7 +73,7 @@
             <Button DockPanel.Dock="Right" Content="?" Width="36" Margin="8,0,0,0" Click="OnHelpClick" ToolTip="The marks you can type and the keys (F1)" />
             <Grid>
                 <TextBox x:Name="AddBox" FontSize="15" Padding="8,6" PreviewKeyDown="OnAddKeyDown" TextChanged="OnAddTextChanged" />
-                <TextBlock x:Name="AddHint" Text="Add a task… (Enter saves; @today @tomorrow @mon…@sun @15:30 ! !! #tag; ? for all marks)" Margin="12,0,0,0" VerticalAlignment="Center" Opacity="0.45" IsHitTestVisible="False" />
+                <TextBlock x:Name="AddHint" Text="Add a task… (Enter saves; @today @tomorrow @mon…@sun @15:30 @alarm ! !! #tag; ? for all marks)" Margin="12,0,0,0" VerticalAlignment="Center" Opacity="0.45" IsHitTestVisible="False" />
             </Grid>
         </DockPanel>
         <Grid Grid.Row="1">
@@ -97,7 +97,7 @@
                     <TextBox x:Name="FilterBox" Padding="8,5" TextChanged="OnFilterChanged" PreviewKeyDown="OnFilterKeyDown" />
                     <TextBlock x:Name="FilterHint" Text="Filter by title or #tag (Ctrl+F)" Margin="12,0,0,0" VerticalAlignment="Center" Opacity="0.45" IsHitTestVisible="False" />
                 </Grid>
-                <ListView x:Name="Tasks" Grid.Row="1" ItemTemplate="{StaticResource TaskRowTemplate}" HorizontalContentAlignment="Stretch" PreviewKeyDown="OnTasksKeyDown" SelectionMode="Single">
+                <ListView x:Name="Tasks" Grid.Row="1" ItemTemplate="{StaticResource TaskRowTemplate}" HorizontalContentAlignment="Stretch" PreviewKeyDown="OnTasksKeyDown" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
