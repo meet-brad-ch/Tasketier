@@ -29,6 +29,20 @@ public sealed class UndoHistory
         }
     }
 
+    /// <summary>Runs a change and records it for undo only when it succeeds, so a failed change leaves no entry.</summary>
+    /// <param name="description">What the change does, for the status line.</param>
+    /// <param name="before">The task before the change, or null when the change adds it.</param>
+    /// <param name="change">The change; it returns the task it changed, added or removed.</param>
+    /// <returns>What the change returned.</returns>
+    public TaskItem Do(string description, TaskItem? before, Func<TaskItem> change)
+    {
+        ArgumentNullException.ThrowIfNull(description);
+        ArgumentNullException.ThrowIfNull(change);
+        TaskItem result = change();
+        Push(new UndoEntry(description, result.Id, before));
+        return result;
+    }
+
     /// <summary>Takes the newest change off the stack.</summary>
     /// <returns>The change, or null when there is none.</returns>
     public UndoEntry? Pop()

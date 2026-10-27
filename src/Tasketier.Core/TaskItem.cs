@@ -30,6 +30,9 @@ public sealed class TaskItem
     /// <summary>When the alarm fired, or null while it has not. Cleared when the due time or the alarm changes.</summary>
     public DateTimeOffset? AlarmFired { get; set; }
 
+    /// <summary>When a snoozed alarm comes back, or null when the alarm is not snoozed.</summary>
+    public DateTimeOffset? SnoozedUntil { get; set; }
+
     /// <summary>When the task was added.</summary>
     public DateTimeOffset Created { get; set; }
 
@@ -52,6 +55,7 @@ public sealed class TaskItem
         PlannedFor = PlannedFor,
         AlarmMinutes = AlarmMinutes,
         AlarmFired = AlarmFired,
+        SnoozedUntil = SnoozedUntil,
         Created = Created,
         Completed = Completed,
     };

@@ -30,7 +30,6 @@ public partial class App : Application, IDisposable
     private readonly UndoHistory _undo = new(UndoCapacity);
     private readonly ForegroundWindow _foreground = new();
     private readonly Dictionary<int, AlarmWindow> _openAlarms = [];
-    private readonly Dictionary<int, DateTimeOffset> _snoozes = [];
     private DispatcherTimer? _alarmTimer;
     private Mutex? _instance;
     private InstanceSignal? _captureSignal;
@@ -263,7 +262,9 @@ public partial class App : Application, IDisposable
 
     private void ShowSettings()
     {
-        var dialog = new SettingsWindow(_settings!, _paths!.DefaultFolder);
+        // The Run value in the registry is the only record of start-with-Windows: the installer writes it too.
+        var autostart = new AutostartRegistration(Environment.ProcessPath!);
+        var dialog = new SettingsWindow(_settings!, _paths!.DefaultFolder, autostart.IsEnabled);
         if (dialog.ShowDialog() != true || dialog.Result is null)
         {
             return;
@@ -272,7 +273,10 @@ public partial class App : Application, IDisposable
         _settings = dialog.Result;
         _settingsStore!.Save(_settings);
         RegisterHotkeys();
-        new AutostartRegistration(Environment.ProcessPath!).Set(_settings.StartWithWindows);
+        if (dialog.StartWithWindows != autostart.IsEnabled)
+        {
+            autostart.Set(dialog.StartWithWindows);
+        }
         string folder = _paths.DataFolder(_settings);
         if (!string.Equals(folder, _paths.DataFolder(previous), StringComparison.OrdinalIgnoreCase) || _settings.DefaultAlarmMinutes != previous.DefaultAlarmMinutes)
         {
@@ -309,20 +313,10 @@ public partial class App : Application, IDisposable
         }
         try
         {
-            foreach (TaskItem task in _service.DueAlarms())
+            // Due alarms include snoozes that ended. A deleted or done task has none, and an edit of the alarm clears the snooze.
+            foreach (TaskItem task in _service.DueAlarms().Where(t => !_openAlarms.ContainsKey(t.Id)))
             {
-                _service.MarkAlarmFired(task.Id);
-                ShowAlarm(task);
-            }
-            DateTimeOffset now = TimeProvider.System.GetLocalNow();
-            foreach (int id in _snoozes.Where(s => s.Value <= now).Select(s => s.Key).ToList())
-            {
-                _snoozes.Remove(id);
-                TaskItem task = _service.Get(id);
-                if (!task.IsDone)
-                {
-                    ShowAlarm(task);
-                }
+                ShowAlarm(_service.MarkAlarmFired(task.Id));
             }
         }
         catch (Exception error) when (error is TaskStoreDamagedException or TaskNotFoundException or TimeoutException)
@@ -338,12 +332,8 @@ public partial class App : Application, IDisposable
             return;
         }
         var actions = new AlarmWindow.Actions(
-            Done: () => Act(() =>
-            {
-                _undo.Push(new UndoEntry($"completed '{task.Title}'", task.Id, task.Clone()));
-                _service!.Complete(task.Id);
-            }),
-            Snooze: minutes => _snoozes[task.Id] = TimeProvider.System.GetLocalNow().AddMinutes(minutes),
+            Done: () => Act(() => _undo.Do($"completed '{task.Title}'", task.Clone(), () => _service!.Complete(task.Id))),
+            Snooze: minutes => Act(() => _service!.Snooze(task.Id, TimeSpan.FromMinutes(minutes))),
             Disarm: () => { });
         var card = new AlarmWindow(task, actions, _openAlarms.Count);
         _openAlarms[task.Id] = card;

@@ -23,7 +23,4 @@ public sealed class AppSettings
 
     /// <summary>The folder that holds <c>tasks.json</c>; empty means the default folder.</summary>
     public string DataFolder { get; set; } = string.Empty;
-
-    /// <summary>Whether the app registers itself to start with Windows.</summary>
-    public bool StartWithWindows { get; set; }
 }

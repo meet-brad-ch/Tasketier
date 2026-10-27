@@ -21,7 +21,10 @@ public static class AlarmScheduler
         return DueInstant(due, time, zone).AddMinutes(-minutes);
     }
 
-    /// <summary>The open tasks whose alarm instant has passed, has not fired, and whose due time is less than an hour ago.</summary>
+    /// <summary>
+    /// The open tasks whose alarm is due: a snooze that ended, or an alarm instant that passed, has not fired, and
+    /// whose due time is less than an hour ago.
+    /// </summary>
     /// <param name="document">The document.</param>
     /// <param name="now">The moment.</param>
     /// <param name="zone">The local time zone.</param>
@@ -33,17 +36,26 @@ public static class AlarmScheduler
         var due = new List<(DateTimeOffset At, TaskItem Task)>();
         foreach (TaskItem task in document.Tasks)
         {
-            if (task.IsDone || task.AlarmFired is not null || AlarmInstant(task, zone) is not DateTimeOffset at || at > now)
-            {
-                continue;
-            }
-            DateTimeOffset dueAt = DueInstant(task.Due!.Value, task.DueTime!.Value, zone);
-            if (now - dueAt <= LateStartWindow)
+            if (!task.IsDone && FiresAt(task, now, zone) is DateTimeOffset at)
             {
                 due.Add((at, task));
             }
         }
         return [.. due.OrderBy(d => d.At).Select(d => d.Task)];
+    }
+
+    private static DateTimeOffset? FiresAt(TaskItem task, DateTimeOffset now, TimeZoneInfo zone)
+    {
+        if (task.SnoozedUntil is DateTimeOffset until)
+        {
+            return until <= now ? until : null;  // the user asked for it back: no late-start limit
+        }
+        if (task.AlarmFired is not null || AlarmInstant(task, zone) is not DateTimeOffset at || at > now)
+        {
+            return null;
+        }
+        DateTimeOffset dueAt = DueInstant(task.Due!.Value, task.DueTime!.Value, zone);
+        return now - dueAt <= LateStartWindow ? at : null;
     }
 
     private static DateTimeOffset DueInstant(DateOnly due, TimeOnly time, TimeZoneInfo zone)

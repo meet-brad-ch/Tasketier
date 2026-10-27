@@ -6,6 +6,16 @@ public sealed class TaskParserTests
     private static readonly DateOnly Monday = new(2026, 10, 26);
     private readonly TaskParser _parser = new(Monday);
 
+    [Theory]
+    [InlineData("@+99999999d")]
+    [InlineData("@+400000000w")]
+    public void A_day_offset_past_the_last_date_is_a_parse_error(string mark)
+    {
+        TaskParseException error = Assert.Throws<TaskParseException>(() => _parser.Parse("Far " + mark));
+
+        Assert.Contains(mark, error.Message, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void Plain_words_are_the_title_with_no_marks()
     {

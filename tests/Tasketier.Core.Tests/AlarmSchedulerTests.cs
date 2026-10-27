@@ -27,6 +27,27 @@ public sealed class AlarmSchedulerTests
     }
 
     [Fact]
+    public void A_snoozed_alarm_is_due_when_the_snooze_ends_also_long_after_the_due_time()
+    {
+        var at = new DateTimeOffset(2026, 10, 26, 18, 0, 0, TimeSpan.Zero);
+        TaskItem task = Timed(1, 9, 0, 5, fired: at.AddHours(-9));
+        task.SnoozedUntil = at;
+
+        Assert.Empty(AlarmScheduler.Due(Document(task), at.AddSeconds(-1), Utc));
+        Assert.Equal([1], AlarmScheduler.Due(Document(task), at, Utc).Select(t => t.Id));
+    }
+
+    [Fact]
+    public void A_snooze_on_a_done_task_is_not_due()
+    {
+        var at = new DateTimeOffset(2026, 10, 26, 9, 0, 0, TimeSpan.Zero);
+        TaskItem task = Timed(1, 9, 0, 5, fired: at, completed: at);
+        task.SnoozedUntil = at;
+
+        Assert.Empty(AlarmScheduler.Due(Document(task), at.AddMinutes(5), Utc));
+    }
+
+    [Fact]
     public void The_alarm_instant_is_the_due_time_minus_the_lead()
     {
         DateTimeOffset? at = AlarmScheduler.AlarmInstant(Timed(1, 15, 30, 5), Utc);

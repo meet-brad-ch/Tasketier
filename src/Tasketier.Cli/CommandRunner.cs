@@ -23,7 +23,8 @@ public sealed class CommandRunner
         tasketier mcp                        run the MCP server on stdin/stdout
         tasketier version
 
-        Options: --json (records instead of lines), --data <folder> (the folder with tasks.json).
+        Options: --json (records instead of lines), --data <folder> (the folder with tasks.json;
+        then the settings are not read, and a bare @alarm means 3 minutes).
 
         Inline syntax: words are the title. #tag adds a tag. ! is high, !! is urgent. @today @tomorrow @fri
         @2026-11-03 @+3d set the due day. @15:30 sets the due time (today when no day). @none removes the date.
@@ -154,15 +155,9 @@ public sealed class CommandRunner
         return id;
     }
 
-    private static TaskView View(string? name) => (name ?? "today").ToUpperInvariant() switch
-    {
-        "TODAY" => TaskView.Today,
-        "UPCOMING" => TaskView.Upcoming,
-        "INBOX" => TaskView.Inbox,
-        "DONE" => TaskView.Done,
-        "ALL" => TaskView.All,
-        _ => throw new UsageException($"Unknown view '{name}'. Use today, upcoming, inbox, done or all."),
-    };
+    private static TaskView View(string? name) => TaskViewNames.TryParse(name ?? "today", out TaskView view)
+        ? view
+        : throw new UsageException($"Unknown view '{name}'. Use {TaskViewNames.Choices}.");
 
     private void Print(TaskItem task, bool json, string prefix)
     {

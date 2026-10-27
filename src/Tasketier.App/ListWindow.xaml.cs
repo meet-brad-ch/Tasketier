@@ -17,6 +17,7 @@ public partial class ListWindow : Window
     private readonly ObservableCollection<TaskRow> _rows = [];
     private TaskService _service;
     private bool _allowClose;
+    private bool _refreshPending;
 
     /// <summary>Creates the window.</summary>
     /// <param name="service">The service.</param>
@@ -34,19 +35,32 @@ public partial class ListWindow : Window
     }
 
     /// <summary>The view the window shows, named by the selected rail item's Tag.</summary>
-    public TaskView View => Views.SelectedItem is ListBoxItem { Tag: string name } ? Enum.Parse<TaskView>(name) : TaskView.Today;
+    public TaskView View => Views.SelectedItem is ListBoxItem { Tag: string name }
+        ? Enum.Parse<TaskView>(name)
+        : throw new InvalidOperationException("The view rail has no selected view with a name.");
 
     /// <summary>Points the window at another service (after the data folder changed) and refreshes.</summary>
     /// <param name="service">The new service.</param>
     public void UseService(TaskService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
-        Refresh();
+        Reload();
     }
 
     /// <summary>Reads the current view again from the store; keeps the selection by id.</summary>
     public void Refresh()
     {
+        if (_rows.Any(r => r.IsEditing))
+        {
+            _refreshPending = true;  // a reload now would remove the edit field and its text; reload when the edit ends
+            return;
+        }
+        Reload();
+    }
+
+    private void Reload()
+    {
+        _refreshPending = false;
         int? selectedId = (Tasks.SelectedItem as TaskRow)?.Id;
         TaskQueries queries = _service.Queries();
         IReadOnlyList<TaskItem> tasks;
@@ -74,7 +88,7 @@ public partial class ListWindow : Window
     /// <summary>Shows the window, in front, with the add box focused.</summary>
     public void ShowAndFocus()
     {
-        Refresh();
+        Reload();
         if (WindowState == WindowState.Minimized)
         {
             WindowState = WindowState.Normal;
@@ -127,14 +141,14 @@ public partial class ListWindow : Window
         base.OnPreviewKeyDown(e);
     }
 
-    private void OnViewChanged(object sender, SelectionChangedEventArgs e) => Refresh();
+    private void OnViewChanged(object sender, SelectionChangedEventArgs e) => Reload();
 
     private void OnHelpClick(object sender, RoutedEventArgs e) => _showHelp();
 
     private void OnFilterChanged(object sender, TextChangedEventArgs e)
     {
         FilterHint.Visibility = FilterBox.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
-        Refresh();
+        Reload();
     }
 
     private void OnFilterKeyDown(object sender, KeyEventArgs e)
@@ -175,12 +189,10 @@ public partial class ListWindow : Window
         {
             if (row.IsDone)
             {
-                _undo.Push(new UndoEntry($"reopened '{row.Title}'", row.Id, row.Task.Clone()));
-                _service.Uncomplete(row.Id);
+                _undo.Do($"reopened '{row.Title}'", row.Task.Clone(), () => _service.Uncomplete(row.Id));
                 return $"Reopened #{row.Id} {row.Title}";
             }
-            _undo.Push(new UndoEntry($"completed '{row.Title}'", row.Id, row.Task.Clone()));
-            _service.Complete(row.Id);
+            _undo.Do($"completed '{row.Title}'", row.Task.Clone(), () => _service.Complete(row.Id));
             return $"Completed #{row.Id} {row.Title}";
         });
     }
@@ -193,13 +205,12 @@ public partial class ListWindow : Window
         }
         Act(() =>
         {
-            _undo.Push(new UndoEntry(row.IsPlanned ? $"unplanned '{row.Title}'" : $"planned '{row.Title}'", row.Id, row.Task.Clone()));
             if (row.IsPlanned)
             {
-                _service.Unplan(row.Id);
+                _undo.Do($"unplanned '{row.Title}'", row.Task.Clone(), () => _service.Unplan(row.Id));
                 return $"Taken out of today: #{row.Id} {row.Title}";
             }
-            _service.Plan(row.Id);
+            _undo.Do($"planned '{row.Title}'", row.Task.Clone(), () => _service.Plan(row.Id));
             return $"Planned for today: #{row.Id} {row.Title}";
         });
     }
@@ -238,8 +249,7 @@ public partial class ListWindow : Window
                 e.Handled = true;
                 Act(() =>
                 {
-                    _undo.Push(new UndoEntry($"deleted '{row.Title}'", row.Id, row.Task.Clone()));
-                    _service.Delete(row.Id);
+                    _undo.Do($"deleted '{row.Title}'", row.Task.Clone(), () => _service.Delete(row.Id));
                     return $"Deleted #{row.Id} {row.Title} (Ctrl+Z brings it back)";
                 });
                 break;
@@ -273,7 +283,7 @@ public partial class ListWindow : Window
         else if (e.Key == Key.Escape)
         {
             e.Handled = true;
-            row.IsEditing = false;
+            EndEdit(row);
             Tasks.Focus();
         }
     }
@@ -303,18 +313,36 @@ public partial class ListWindow : Window
 
     private void CommitEdit(TaskRow row)
     {
-        row.IsEditing = false;
         string text = row.EditText.Trim();
         if (text.Length == 0 || string.Equals(text, row.Syntax, StringComparison.Ordinal))
         {
+            EndEdit(row);
             return;
         }
+        try
+        {
+            _service.Preview(text);
+        }
+        catch (TaskParseException error)
+        {
+            Status.Text = error.Message;  // the field stays open with the text, so the user can correct it
+            return;
+        }
+        row.IsEditing = false;
         Act(() =>
         {
-            _undo.Push(new UndoEntry($"edited '{row.Title}'", row.Id, row.Task.Clone()));
-            TaskItem edited = _service.Edit(row.Id, text);
+            TaskItem edited = _undo.Do($"edited '{row.Title}'", row.Task.Clone(), () => _service.Edit(row.Id, text));
             return $"Edited #{edited.Id} {edited.Title}";
         });
+    }
+
+    private void EndEdit(TaskRow row)
+    {
+        row.IsEditing = false;
+        if (_refreshPending)
+        {
+            Reload();
+        }
     }
 
     private void Undo()
@@ -337,7 +365,7 @@ public partial class ListWindow : Window
         {
             Status.Text = error.Message;
         }
-        Refresh();
+        Reload();
     }
 
     private static TaskRow? RowOf(object sender) => (sender as FrameworkElement)?.DataContext as TaskRow;

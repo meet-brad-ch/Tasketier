@@ -156,14 +156,28 @@ public sealed class TaskParser
         }
         if (lower.Length >= 3 && lower[0] == '+' && int.TryParse(lower.AsSpan(1, lower.Length - 2), NumberStyles.None, CultureInfo.InvariantCulture, out int count))
         {
-            return lower[^1] switch
-            {
-                'd' => _today.AddDays(count),
-                'w' => _today.AddDays(7 * count),
-                _ => null,
-            };
+            return Ahead(lower, count);
         }
         return NextWeekday(lower);
+    }
+
+    private DateOnly? Ahead(string lower, int count)
+    {
+        long days = lower[^1] switch
+        {
+            'd' => count,
+            'w' => 7L * count,
+            _ => -1,
+        };
+        if (days < 0)
+        {
+            return null;
+        }
+        if (days > DateOnly.MaxValue.DayNumber - _today.DayNumber)
+        {
+            throw new TaskParseException($"The mark @{lower} is too far ahead. The last date is {DateOnly.MaxValue:yyyy-MM-dd}.");
+        }
+        return _today.AddDays((int)days);
     }
 
     private DateOnly? NextWeekday(string lower)

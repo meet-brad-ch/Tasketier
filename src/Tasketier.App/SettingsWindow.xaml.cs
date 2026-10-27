@@ -18,7 +18,8 @@ public partial class SettingsWindow : Window
     /// <summary>Creates the dialog from the current settings.</summary>
     /// <param name="current">The settings to show.</param>
     /// <param name="defaultFolder">The folder an empty data folder means.</param>
-    public SettingsWindow(AppSettings current, string defaultFolder)
+    /// <param name="startWithWindows">Whether the app starts with Windows now, from the registry.</param>
+    public SettingsWindow(AppSettings current, string defaultFolder, bool startWithWindows)
     {
         ArgumentNullException.ThrowIfNull(current);
         ArgumentNullException.ThrowIfNull(defaultFolder);
@@ -28,12 +29,15 @@ public partial class SettingsWindow : Window
         ListBox.Text = current.ListHotkey;
         FolderBox.Text = current.DataFolder;
         AlarmBox.Text = current.DefaultAlarmMinutes.ToString(CultureInfo.InvariantCulture);
-        AutostartBox.IsChecked = current.StartWithWindows;
+        AutostartBox.IsChecked = startWithWindows;
         FolderHint.Text = $"Empty means {defaultFolder}. A synced folder carries the tasks between PCs. The file is tasks.json.";
     }
 
     /// <summary>The settings as saved, or null when the dialog was cancelled.</summary>
     public AppSettings? Result { get; private set; }
+
+    /// <summary>Whether the user wants the app to start with Windows; read it when the dialog returns true.</summary>
+    public bool StartWithWindows { get; private set; }
 
     private void OnHotkeyKeyDown(object sender, KeyEventArgs e)
     {
@@ -116,8 +120,8 @@ public partial class SettingsWindow : Window
             ListHotkey = ListBox.Text,
             DataFolder = folder,
             DefaultAlarmMinutes = alarmMinutes,
-            StartWithWindows = AutostartBox.IsChecked == true,
         };
+        StartWithWindows = AutostartBox.IsChecked == true;
         DialogResult = true;
     }
 }

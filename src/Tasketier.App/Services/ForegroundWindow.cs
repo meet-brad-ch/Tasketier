@@ -11,6 +11,9 @@ public sealed class ForegroundWindow
     /// <summary>Records the current foreground window.</summary>
     public void Remember() => _previous = NativeMethods.GetForegroundWindow();
 
+    /// <summary>Drops the remembered window, so that closing the box does not move the focus.</summary>
+    public void Forget() => _previous = 0;
+
     /// <summary>Gives the focus back to the remembered window, when it still exists.</summary>
     public void Restore()
     {

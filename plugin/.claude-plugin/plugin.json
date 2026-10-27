@@ -1,7 +1,7 @@
 {
   "name": "tasketier",
   "description": "Add, list, complete, plan, search and set alarms on the user's Tasketier tasks through the tasketier MCP server (local task capture and planning on this PC).",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "author": {
     "name": "Brad Chamberlain"
   },

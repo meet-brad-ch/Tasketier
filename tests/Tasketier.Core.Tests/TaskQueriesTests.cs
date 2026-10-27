@@ -145,6 +145,24 @@ public sealed class TaskQueriesTests
         Assert.Equal([2, 1], _queries.Search(document, "milk").Select(t => t.Id));
     }
 
+    [Theory]
+    [InlineData("today", TaskView.Today)]
+    [InlineData("Upcoming", TaskView.Upcoming)]
+    [InlineData("INBOX", TaskView.Inbox)]
+    [InlineData("done", TaskView.Done)]
+    [InlineData("all", TaskView.All)]
+    public void View_names_parse_ignoring_case(string name, TaskView expected)
+    {
+        Assert.True(TaskViewNames.TryParse(name, out TaskView view));
+        Assert.Equal(expected, view);
+    }
+
+    [Theory]
+    [InlineData("someday")]
+    [InlineData("4")]
+    [InlineData(null)]
+    public void Unknown_view_names_do_not_parse(string? name) => Assert.False(TaskViewNames.TryParse(name, out _));
+
     [Fact]
     public void IsOverdue_is_false_for_today_and_for_done_tasks()
     {

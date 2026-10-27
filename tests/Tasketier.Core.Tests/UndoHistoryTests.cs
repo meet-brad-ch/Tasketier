@@ -14,6 +14,30 @@ public sealed class UndoHistoryTests : IDisposable
     public void Dispose() => _folder.Dispose();
 
     [Fact]
+    public void Do_records_a_change_that_succeeded_with_the_id_it_returned()
+    {
+        var history = new UndoHistory(20);
+        TaskItem task = _service.Add("Milk");
+
+        history.Do("completed", task.Clone(), () => _service.Complete(task.Id));
+
+        Assert.Equal(1, history.Count);
+        Assert.Equal(task.Id, history.Pop()!.TaskId);
+    }
+
+    [Fact]
+    public void Do_records_nothing_when_the_change_fails()
+    {
+        var history = new UndoHistory(20);
+        TaskItem task = _service.Add("Milk");
+
+        Assert.Throws<TaskParseException>(() => history.Do("edited", task.Clone(), () => _service.Edit(task.Id, "Milk @soon")));
+        Assert.Throws<TaskNotFoundException>(() => history.Do("deleted", task.Clone(), () => _service.Delete(99)));
+
+        Assert.Equal(0, history.Count);
+    }
+
+    [Fact]
     public void Undoing_a_completion_reopens_the_task()
     {
         var history = new UndoHistory(20);

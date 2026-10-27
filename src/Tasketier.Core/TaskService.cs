@@ -47,7 +47,10 @@ public sealed class TaskService
         });
     }
 
-    /// <summary>Replaces a task's title, tags, priority and due from one line of inline syntax.</summary>
+    /// <summary>
+    /// Replaces a task's title, tags, priority, due day, due time and alarm from one line of inline syntax. The plan
+    /// for today and the done state stay.
+    /// </summary>
     /// <param name="id">The task.</param>
     /// <param name="text">The whole line, as <see cref="TaskSyntax.Render"/> writes it.</param>
     /// <returns>The task after the change.</returns>
@@ -65,7 +68,11 @@ public sealed class TaskService
     /// <summary>Marks a task done now.</summary>
     /// <param name="id">The task.</param>
     /// <returns>The task after the change.</returns>
-    public TaskItem Complete(int id) => Change(id, task => task.Completed = _clock.GetLocalNow());
+    public TaskItem Complete(int id) => Change(id, task =>
+    {
+        task.Completed = _clock.GetLocalNow();
+        task.SnoozedUntil = null;
+    });
 
     /// <summary>Reopens a done task.</summary>
     /// <param name="id">The task.</param>
@@ -139,7 +146,17 @@ public sealed class TaskService
     /// <summary>Records that a task's alarm fired, so it does not fire again.</summary>
     /// <param name="id">The task.</param>
     /// <returns>The task after the change.</returns>
-    public TaskItem MarkAlarmFired(int id) => Change(id, task => task.AlarmFired = _clock.GetLocalNow());
+    public TaskItem MarkAlarmFired(int id) => Change(id, task =>
+    {
+        task.AlarmFired = _clock.GetLocalNow();
+        task.SnoozedUntil = null;
+    });
+
+    /// <summary>Brings a task's alarm back after a delay. The snooze is stored, so it survives a restart of the app.</summary>
+    /// <param name="id">The task.</param>
+    /// <param name="delay">How long from now.</param>
+    /// <returns>The task after the change.</returns>
+    public TaskItem Snooze(int id, TimeSpan delay) => Change(id, task => task.SnoozedUntil = _clock.GetLocalNow() + delay);
 
     /// <summary>The view queries at this moment.</summary>
     /// <returns>The queries.</returns>
@@ -156,7 +173,8 @@ public sealed class TaskService
         task.AlarmMinutes = task.DueTime is null ? null : parsed.AlarmMinutes;
         if (alarmChanged)
         {
-            task.AlarmFired = null;  // a moved or changed alarm fires again
+            task.AlarmFired = null;  // a moved or changed alarm fires again, at its new time
+            task.SnoozedUntil = null;
         }
     }
 

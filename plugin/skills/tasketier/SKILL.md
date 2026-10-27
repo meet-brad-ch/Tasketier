@@ -28,7 +28,8 @@ writes that file. The desktop app shows each change at once. There is no account
 | one task's details | `get_task` | |
 
 Each tool returns JSON records. A task has `id`, `title`, `tags`, `priority` (None, High, Urgent),
-`due` (a date), `dueTime`, `plannedFor`, `alarmMinutes`, `alarmFired`, `created`, `completed` and `isDone`.
+`due` (a date), `dueTime`, `plannedFor`, `alarmMinutes`, `alarmFired`, `snoozedUntil`, `created`, `completed`
+and `isDone`. Fields without a value are left out.
 
 ## Inline syntax (for add_task and update_task)
 

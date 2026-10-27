@@ -87,7 +87,7 @@ artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 
 | Action | How |
 | --- | --- |
-| Add a task from anywhere | `Ctrl+Alt+A`, type, `Enter`. `Esc` cancels. The focus returns to the previous window. |
+| Add a task from anywhere | `Ctrl+Alt+A`, type, `Enter`. `Esc` cancels. The focus returns to the previous window. When you click elsewhere, an empty box closes, and a box with text stays on top until you press `Enter` or `Esc`. |
 | Open the list | `Ctrl+Alt+L`, or a left click on the tray icon |
 | Complete | The checkbox, or `Space` on the selected row |
 | Plan for today without a date | The star (`☆` becomes `★`). The task stays in Today until it is done or unstarred. |
@@ -95,9 +95,9 @@ artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 | Delete | `Del`. `Ctrl+Z` brings the task back. |
 | Undo | `Ctrl+Z`. The app keeps the last 20 changes of the session, captures included. |
 | Filter | Type in the filter box (`Ctrl+F`). The filter matches the title or a `#tag`. |
-| Alarm | `@alarm` on a task with a time: an orange digital clock in the corner 3 minutes before, with Done, Snooze 5 / 15 / 60 min and Disarm. It beeps until you answer it. The SNOOZE bar and `Esc` snooze 1 minute. Only Disarm acknowledges. `@alarmN` sets N minutes, for example `@alarm5` or `@alarm15`. Settings changes the default lead. The tray app must run. |
+| Alarm | `@alarm` on a task with a time: an orange digital clock in the corner 3 minutes before, with Done, Snooze 5 / 15 / 60 min and Disarm. It beeps until you answer it. The SNOOZE bar, `Esc` and a close without an answer (for example `Alt+F4`) snooze 1 minute. Only Disarm acknowledges. A snooze is stored with the task, so it also comes back after a restart. `@alarmN` sets N minutes, for example `@alarm5` or `@alarm15`. Settings changes the default lead. The tray app must run. When the app starts more than one hour after a due time, it does not show that alarm. |
 | Help | `?` or `F1` in the capture box or the list. Also in the tray menu. |
-| Settings | Tray menu: both hotkeys, the alarm lead, the data folder, start with Windows |
+| Settings | Tray menu: both hotkeys, the alarm lead, the data folder, start with Windows (the per-user Run entry in the registry, which the installer also writes) |
 
 You can change both hotkeys in Settings. When another program holds a chord, the tray shows a
 message, and that hotkey stays off until you change it. The defaults avoid chords that common

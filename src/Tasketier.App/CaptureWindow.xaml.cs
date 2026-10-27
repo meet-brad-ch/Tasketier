@@ -39,7 +39,7 @@ public partial class CaptureWindow : Window
             WindowPlacement.OnPointerMonitor(this);
             Input.Focus();
         };
-        Deactivated += (_, _) => CloseOnce();
+        Deactivated += (_, _) => OnDeactivated();
         Closed += (_, _) => _foreground.Restore();
     }
 
@@ -115,6 +115,17 @@ public partial class CaptureWindow : Window
     {
         Preview.Text = text;
         Preview.Foreground = isError ? ErrorBrush : _previewBrush;
+    }
+
+    private void OnDeactivated()
+    {
+        if (string.IsNullOrWhiteSpace(Input.Text) || Input.IsReadOnly)
+        {
+            CloseOnce();
+            return;
+        }
+        // A half-typed task must not get lost: the box stays on top. The user went elsewhere, so do not pull the focus back.
+        _foreground.Forget();
     }
 
     private void CloseOnce()

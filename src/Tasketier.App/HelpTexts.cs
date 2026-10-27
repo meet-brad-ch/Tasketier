@@ -34,7 +34,8 @@ public static class HelpTexts
         Esc                      hide the window (it stays in the tray)
 
         An alarm shows an orange clock in the corner and beeps until you answer it:
-        Done, Snooze 5 / 15 / 60 min, Disarm. The SNOOZE bar and Esc snooze 1 min. Only Disarm acknowledges.
+        Done, Snooze 5 / 15 / 60 min, Disarm. The SNOOZE bar, Esc and Alt+F4 snooze 1 min. Only Disarm acknowledges.
+        A snooze is stored with the task. An alarm more than one hour after its due time is not shown.
         The default lead (3 min) is in Settings.
         """;
 }

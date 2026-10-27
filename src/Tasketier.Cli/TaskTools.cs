@@ -83,15 +83,9 @@ public sealed class TaskTools
     [McpServerTool(Name = "get_task"), Description("Get one task by id. Returns the task.")]
     public string GetTask([Description("The task id.")] int id) => Json(() => _service.Get(id));
 
-    private static TaskView ParseView(string view) => (view ?? "today").ToUpperInvariant() switch
-    {
-        "TODAY" => TaskView.Today,
-        "UPCOMING" => TaskView.Upcoming,
-        "INBOX" => TaskView.Inbox,
-        "DONE" => TaskView.Done,
-        "ALL" => TaskView.All,
-        _ => throw new ArgumentException($"Unknown view '{view}'. Use today, upcoming, inbox, done or all.", nameof(view)),
-    };
+    private static TaskView ParseView(string view) => TaskViewNames.TryParse(view ?? "today", out TaskView parsed)
+        ? parsed
+        : throw new ArgumentException($"Unknown view '{view}'. Use {TaskViewNames.Choices}.", nameof(view));
 
     /// <summary>Runs an operation; a known failure becomes an <see cref="McpException"/>, whose message reaches the client.</summary>
     private static string Json<T>(Func<T> operation)

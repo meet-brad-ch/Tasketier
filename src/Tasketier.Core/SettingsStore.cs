@@ -28,9 +28,17 @@ public sealed class SettingsStore
         }
         try
         {
-            using FileStream stream = File.OpenRead(_path);
-            return JsonSerializer.Deserialize<AppSettings>(stream, TaskJson.Options)
-                ?? throw new JsonException("The file holds JSON null instead of settings.");
+            AppSettings settings;
+            using (FileStream stream = File.OpenRead(_path))
+            {
+                settings = JsonSerializer.Deserialize<AppSettings>(stream, TaskJson.Options)
+                    ?? throw new JsonException("The file holds JSON null instead of settings.");
+            }
+            if (settings.DefaultAlarmMinutes is < 0 or > TaskParser.MaxAlarmMinutes)
+            {
+                throw new SettingsDamagedException($"The settings file {_path} sets defaultAlarmMinutes to {settings.DefaultAlarmMinutes}. It must be 0 to {TaskParser.MaxAlarmMinutes}. Fix or delete it.");
+            }
+            return settings;
         }
         catch (Exception error) when (error is JsonException or IOException or UnauthorizedAccessException)
         {
@@ -44,7 +52,11 @@ public sealed class SettingsStore
     {
         ArgumentNullException.ThrowIfNull(settings);
         Directory.CreateDirectory(System.IO.Path.GetDirectoryName(_path)!);
-        using FileStream stream = File.Create(_path);
-        JsonSerializer.Serialize(stream, settings, TaskJson.Options);
+        string temporary = _path + ".tmp";
+        using (FileStream stream = File.Create(temporary))
+        {
+            JsonSerializer.Serialize(stream, settings, TaskJson.Options);
+        }
+        File.Move(temporary, _path, overwrite: true);
     }
 }

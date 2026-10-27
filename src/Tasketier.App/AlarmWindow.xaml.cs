@@ -14,6 +14,7 @@ public partial class AlarmWindow : Window, IDisposable
 {
     private readonly Actions _actions;
     private System.Media.SoundPlayer? _player;
+    private bool _answered;
 
     /// <summary>Creates the card for a task.</summary>
     /// <param name="task">The task.</param>
@@ -72,11 +73,7 @@ public partial class AlarmWindow : Window, IDisposable
 
     private void OnSnoozeBar(object sender, RoutedEventArgs e) => Snooze(1);
 
-    private void OnDone(object sender, RoutedEventArgs e)
-    {
-        _actions.Done();
-        Close();
-    }
+    private void OnDone(object sender, RoutedEventArgs e) => Answer(_actions.Done);
 
     private void OnSnooze5(object sender, RoutedEventArgs e) => Snooze(5);
 
@@ -84,11 +81,7 @@ public partial class AlarmWindow : Window, IDisposable
 
     private void OnSnooze60(object sender, RoutedEventArgs e) => Snooze(60);
 
-    private void OnDisarm(object sender, RoutedEventArgs e)
-    {
-        _actions.Disarm();
-        Close();
-    }
+    private void OnDisarm(object sender, RoutedEventArgs e) => Answer(_actions.Disarm);
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
@@ -99,10 +92,25 @@ public partial class AlarmWindow : Window, IDisposable
         }
     }
 
-    private void Snooze(int minutes)
+    private void Snooze(int minutes) => Answer(() => _actions.Snooze(minutes));
+
+    private void Answer(Action action)
     {
-        _actions.Snooze(minutes);
+        _answered = true;
+        action();
         Close();
+    }
+
+    /// <summary>Only Disarm acknowledges: a close without an answer (Alt+F4, the app exits) snoozes one minute.</summary>
+    /// <param name="e">The event data.</param>
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        if (!_answered)
+        {
+            _answered = true;
+            _actions.Snooze(1);
+        }
+        base.OnClosing(e);
     }
 
     /// <summary>Loops the bundled beeps until the card closes; they do not depend on the Windows sound scheme.</summary>

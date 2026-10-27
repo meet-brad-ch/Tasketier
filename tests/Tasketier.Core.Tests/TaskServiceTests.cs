@@ -31,6 +31,39 @@ public sealed class TaskServiceTests : IDisposable
     }
 
     [Fact]
+    public void A_snooze_is_stored_so_the_alarm_comes_back_after_a_restart()
+    {
+        TaskItem task = _service.Add("Standup @12:10 @alarm5");
+        _clock.Advance(TimeSpan.FromMinutes(5));
+        Assert.Equal([task.Id], _service.DueAlarms().Select(t => t.Id));
+        _service.MarkAlarmFired(task.Id);
+        Assert.Empty(_service.DueAlarms());
+
+        _service.Snooze(task.Id, TimeSpan.FromMinutes(1));
+        var restarted = new TaskService(new TaskStore(_folder.Path, _clock), _clock);
+        Assert.Empty(restarted.DueAlarms());
+        _clock.Advance(TimeSpan.FromMinutes(1));
+
+        Assert.Equal([task.Id], restarted.DueAlarms().Select(t => t.Id));
+        Assert.Null(restarted.MarkAlarmFired(task.Id).SnoozedUntil);
+        Assert.Empty(restarted.DueAlarms());
+    }
+
+    [Fact]
+    public void Completing_or_changing_the_alarm_clears_a_snooze()
+    {
+        TaskItem done = _service.Add("Standup @12:10 @alarm5");
+        TaskItem moved = _service.Add("Review @12:20 @alarm5");
+        _service.Snooze(done.Id, TimeSpan.FromMinutes(1));
+        _service.Snooze(moved.Id, TimeSpan.FromMinutes(1));
+
+        Assert.Null(_service.Complete(done.Id).SnoozedUntil);
+        Assert.Null(_service.Edit(moved.Id, "Review @13:00 @alarm5").SnoozedUntil);
+        Assert.NotNull(_service.Snooze(moved.Id, TimeSpan.FromMinutes(1)).SnoozedUntil);
+        Assert.NotNull(_service.Edit(moved.Id, "Review again @13:00 @alarm5").SnoozedUntil);
+    }
+
+    [Fact]
     public void Add_rejects_an_empty_line_and_stores_nothing()
     {
         Assert.Throws<TaskParseException>(() => _service.Add("#onlytag"));

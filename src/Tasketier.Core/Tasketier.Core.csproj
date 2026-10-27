@@ -30,6 +30,7 @@
     <Compile Include="TaskStoreDamagedException.cs" />
     <Compile Include="TaskSyntax.cs" />
     <Compile Include="TaskView.cs" />
+    <Compile Include="TaskViewNames.cs" />
     <Compile Include="UndoEntry.cs" />
     <Compile Include="UndoHistory.cs" />
   </ItemGroup>
