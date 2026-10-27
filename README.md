@@ -17,7 +17,7 @@ query tasks from a running session.
 
 **Status:** working. Capture box, list window with the five views, inline edit, plan star, undo,
 alarms, settings, help, tray, autostart, CLI, MCP server, plugin, installer. Every gate of
-`scriptserify.ps1` passes.
+`scripts/verify.ps1` passes.
 
 ## Screenshots
 
@@ -80,7 +80,7 @@ clears the machine-level feeds, so the build is the same on every machine.
 Tasks and settings live in `%LOCALAPPDATA%\Tasketier`. An uninstall keeps them.
 
 The Releases page has the installer of each version. CI (`.github/workflows/build.yml`) runs
-`scriptserify.ps1` and `build-installer.ps1` on every push and keeps the installer as an
+`scripts/verify.ps1` and `build-installer.ps1` on every push and keeps the installer as an
 artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 
 ## Use
@@ -95,7 +95,7 @@ artifact. A tag `v1.2.3` makes the release with the installer and its SHA-256.
 | Delete | `Del`. `Ctrl+Z` brings the task back. |
 | Undo | `Ctrl+Z`. The app keeps the last 20 changes of the session, captures included. |
 | Filter | Type in the filter box (`Ctrl+F`). The filter matches the title or a `#tag`. |
-| Alarm | `@alarm` on a task with a time: an orange digital clock in the corner 3 minutes before, with Done, Snooze 5 / 15 / 60 min and Disarm. It beeps until you answer it. The SNOOZE bar and `Esc` snooze 1 minute. Only Disarm acknowledges. `@alarm10` means 10 minutes. The tray app must run. |
+| Alarm | `@alarm` on a task with a time: an orange digital clock in the corner 3 minutes before, with Done, Snooze 5 / 15 / 60 min and Disarm. It beeps until you answer it. The SNOOZE bar and `Esc` snooze 1 minute. Only Disarm acknowledges. `@alarmN` sets N minutes, for example `@alarm5` or `@alarm15`. Settings changes the default lead. The tray app must run. |
 | Help | `?` or `F1` in the capture box or the list. Also in the tray menu. |
 | Settings | Tray menu: both hotkeys, the alarm lead, the data folder, start with Windows |
 
@@ -106,8 +106,10 @@ tools hold, such as `Ctrl+Alt+Space` and `Ctrl+Alt+T`.
 **Inline syntax:** Words are the title. `#tag` adds a tag. `!` is high priority, `!!` is urgent.
 Both also work as a suffix: `Pay rent!!`. `@today`, `@tomorrow`, `@mon` to `@sun`, `@2026-11-03`,
 `@+3d` and `@+2w` set the due day. A weekday means the next such day after today. `@15:30`
-sets the time. Without a day, the time means today. `@none` removes the date. `@alarm` or `@alarm10` sets an alarm 3 or 10 minutes before the due time.
-It needs a time. An unknown `@` mark is an error. The box shows it before you press Enter.
+sets the time. Without a day, the time means today. `@none` removes the date. `@alarm` sets an
+alarm at the default lead before the due time (3 minutes unless Settings changes it). `@alarmN`
+sets one N minutes before, for N from 0 to 1440. An alarm needs a time. An unknown `@` mark is an
+error. The box shows it before you press Enter.
 
 **Views:** Today shows overdue tasks first, in red, then tasks due today, then tasks planned for
 today. Upcoming shows tasks due after today, by day. Inbox shows tasks with no date that are not

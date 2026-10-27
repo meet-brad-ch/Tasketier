@@ -14,7 +14,7 @@ public static class HelpTexts
         @2026-11-03  @+3d  @+2w  a date, in 3 days, in 2 weeks
         @15:30          the due time; today when no day is given
         @none           no date (wins over other date marks)
-        @alarm  @alarm10   an alarm 3 (or 10) minutes before the due time; needs a time
+        @alarm  @alarmN          an alarm 3 (or N) minutes before the due time (needs a time)
 
         Examples:
         Call the dentist @fri @15:30 ! #health

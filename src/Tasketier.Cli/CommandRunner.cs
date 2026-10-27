@@ -27,7 +27,8 @@ public sealed class CommandRunner
 
         Inline syntax: words are the title. #tag adds a tag. ! is high, !! is urgent. @today @tomorrow @fri
         @2026-11-03 @+3d set the due day. @15:30 sets the due time (today when no day). @none removes the date.
-        @alarm or @alarm10 sets an alarm 3 (or 10) minutes before the due time; the tray app shows it.
+        @alarm sets an alarm at the default lead (3 minutes unless Settings changes it) before the due time.
+        @alarmN sets one N minutes before (N from 0 to 1440). An alarm needs a due time. The tray app shows it.
         """;
 
     private readonly TextWriter _out;

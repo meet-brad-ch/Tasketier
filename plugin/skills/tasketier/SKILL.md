@@ -39,8 +39,9 @@ Words are the title. Marks can stand anywhere in the line:
   means the next such day after today. On a Monday, `@mon` is the Monday in one week.
 - `@15:30` - the due time. Without a day, it means today.
 - `@none` - no date. It wins over every other date mark on the line.
-- `@alarm` or `@alarm10` - an alarm 3 (the user's default) or 10 minutes before the due time. It
-  needs a due time on the line. The desktop app shows the alarm; the server only stores it.
+- `@alarm` - an alarm at the user's default lead before the due time (3 minutes unless Settings
+  changes it). `@alarmN` - an alarm N minutes before, for N from 0 to 1440. An alarm needs a due
+  time on the line. The desktop app shows the alarm. The server only stores it.
 
 Examples: `Call the dentist @fri @15:30 ! #health`, `Buy milk @tomorrow #home`, `Renew passport @+2w !!`.
 

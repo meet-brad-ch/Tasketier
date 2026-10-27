@@ -6,7 +6,7 @@ namespace Tasketier.Core;
 /// Reads one line of inline syntax: words are the title, <c>#tag</c> is a tag, <c>!</c>/<c>!!</c> is the
 /// priority, <c>@today</c> <c>@tomorrow</c> <c>@fri</c> (the next Friday after today) <c>@2026-11-03</c> <c>@+3d</c> set the due day,
 /// <c>@15:30</c> the due time (today when no day is given), <c>@none</c> clears the date, <c>@alarm</c> or
-/// <c>@alarm10</c> sets an alarm some minutes before the due time.
+/// <c>@alarmN</c> (for example <c>@alarm10</c>) sets an alarm N minutes before the due time.
 /// </summary>
 public sealed class TaskParser
 {
@@ -123,7 +123,7 @@ public sealed class TaskParser
             state.Time = parsedTime;
             return;
         }
-        state.Due = ReadDay(lower) ?? throw new TaskParseException($"Unknown date mark @{mark}. Use @today, @tomorrow, a weekday like @fri, @2026-11-03, @+3d, @15:30, @alarm, @alarm10 or @none.");
+        state.Due = ReadDay(lower) ?? throw new TaskParseException($"Unknown date mark @{mark}. Use @today, @tomorrow, a weekday like @fri, @2026-11-03, @+3d, @15:30, @alarm, @alarmN or @none.");
     }
 
     private int ReadAlarm(string digits)
@@ -136,7 +136,7 @@ public sealed class TaskParser
         {
             return minutes;
         }
-        throw new TaskParseException($"Unknown alarm mark @alarm{digits}. Use @alarm for the default, or @alarm10 for 10 minutes before (up to {MaxAlarmMinutes}).");
+        throw new TaskParseException($"Unknown alarm mark @alarm{digits}. Use @alarm for the default, or @alarmN for N minutes before (N from 0 to {MaxAlarmMinutes}).");
     }
 
     private static Priority Max(Priority a, Priority b) => a > b ? a : b;
