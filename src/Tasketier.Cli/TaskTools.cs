@@ -54,7 +54,7 @@ public sealed class TaskTools
     /// <param name="id">The task id.</param>
     /// <param name="text">The whole new line in inline syntax.</param>
     /// <returns>The task as JSON.</returns>
-    [McpServerTool(Name = "update_task"), Description("Replace the title, the tags, the priority and the due date of a task from one line of text. Parts that are not in the text are cleared. " + SyntaxHelp + " Returns the task.")]
+    [McpServerTool(Name = "update_task"), Description("Replace the title, the tags, the priority, the due day, the due time and the alarm of a task from one line of text. Parts that are not in the text are cleared. The plan for today and the done state stay. " + SyntaxHelp + " Returns the task.")]
     public string UpdateTask([Description("The task id.")] int id, [Description("The whole new task line, for example 'Call the dentist @mon ! #health'.")] string text) => Json(() => _service.Edit(id, text));
 
     /// <summary>Deletes a task.</summary>

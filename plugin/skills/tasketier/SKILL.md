@@ -1,6 +1,6 @@
 ---
 name: tasketier
-description: Manage the user's tasks in Tasketier, the local task tool on this PC, through the tasketier MCP tools (add_task, list_tasks, complete_task, update_task, delete_task, plan_today, search_tasks, get_task, reopen_task). Use when the user asks to add, note, remember or capture a task or todo, asks what is due or planned (today, upcoming, inbox, done), wants a task completed, edited, moved, planned for today, deleted or found, or names Tasketier. Triggers - add a task, remind me to, todo, what is on today, what is due, plan for today, mark done, my tasks, tasketier.
+description: Manage the user's tasks in Tasketier, the local task tool on this PC, through the tasketier MCP tools (add_task, list_tasks, complete_task, update_task, delete_task, plan_today, search_tasks, get_task, reopen_task). Use when the user asks to add, note, remember or capture a task or todo, asks what is due or planned (today, upcoming, inbox, done, all), wants a task completed, edited, moved, planned for today, deleted or found, wants an alarm before a task, or names Tasketier. Triggers - add a task, remind me to, todo, what is on today, what is due, plan for today, mark done, my tasks, set an alarm, alert me at, tasketier.
 ---
 
 # Tasketier
@@ -21,6 +21,7 @@ writes that file. The desktop app shows each change at once. There is no account
 | a task done | `complete_task` | needs the `id`. When you only have words, list or search first. |
 | a task reopened | `reopen_task` | |
 | a task changed | `update_task` | the whole new line. Parts that are not in the line are cleared. |
+| an alarm before a task | `add_task` or `update_task` | the line with a time and `@alarm` or `@alarmN` |
 | a task in today's list without a date | `plan_today` planned `true` | `false` takes it out |
 | a task gone | `delete_task` | ask the user first. There is no undo over MCP. |
 | a task found | `search_tasks` | title or tag. Open tasks first, done tasks after. |
@@ -56,8 +57,15 @@ the user how to write the task. A line with no title words is an error.
 - Do not invent due dates. When the user gives no date, add the task without a date. It goes to
   the inbox. When the user says "today", use `@today`. "This week" is not a date. Ask, or leave
   the date out.
-- `update_task` replaces every part. To change only the day, send the title, the tags and the
-  priority again with the new day. `get_task` gives the current values.
+- `update_task` replaces the title, the tags, the priority, the due day, the due time and the
+  alarm. The plan for today and the done state stay. To change only one part, call `get_task`,
+  write the whole line again from the record, and change that one part. Write the record as marks:
+  `tags` as `#tag`, `priority` High as `!` and Urgent as `!!`, `due` as `@2026-11-03`, `dueTime`
+  as `@15:30`, `alarmMinutes` as `@alarmN` (for example `@alarm10`). A field that you do not
+  write again is cleared. An alarm that you leave out is removed.
+- Add an alarm only when the user asks for an alarm, an alert or a reminder at a time. Use
+  `@alarm` when the user gives no lead, and `@alarmN` when the user gives one ("10 minutes
+  before" is `@alarm10`). An alarm needs a time. When the user gives no time, ask for it.
 - The server fails with a message when the task file is damaged or locked. Show the message. Do
   not retry in a loop. Never edit `tasks.json` by hand.
 
